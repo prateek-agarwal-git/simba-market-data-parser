@@ -1,8 +1,8 @@
 #include <cstdint>
 
-namespace simba_schema::enums {
+namespace simba::schema::enums {
 
-enum MDUpdateAction : std::uint8_t { New = 0, Change = 1, Delete = 2 };
+enum class MDUpdateAction : std::uint8_t { New = 0, Change = 1, Delete = 2 };
 enum MDEntryType : char {
   // verify this
   Bid = '0',

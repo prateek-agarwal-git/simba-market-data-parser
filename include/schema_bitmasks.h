@@ -1,5 +1,5 @@
 #include <cstdint>
-namespace simba_schema::bitmasks {
+namespace simba::schema::bitmasks {
 
 enum MDFlagsSet : std::uint64_t {
   DAY = (1 << 0),
