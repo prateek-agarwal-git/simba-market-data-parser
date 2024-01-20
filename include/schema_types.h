@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <limits>
 
 namespace simba::schema::types {
 using String3 = char[3];
@@ -11,6 +12,9 @@ using String31 = char[31];
 using String256 = char[256];
 using Int64NULL = std::optional<int64_t>;
 using uInt32NULL = std::optional<uint32_t>;
+struct NullValues{
+  static constexpr int64_t Int64 = std::numeric_limits<int64_t> ::max();
+};
 
 struct Decimal5 {
   std::int64_t mantissa;
