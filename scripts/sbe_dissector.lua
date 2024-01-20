@@ -16,8 +16,8 @@ function simba_sbe_protocol.dissector(buffer, pinfo, tree)
     subtree:add_le(size ,buffer(4,2))
     subtree:add_le(flags,buffer(6,2))
     subtree:add_le(sending_time,buffer(8,8))
-    f = buffer(6,2):int()
-    if f > 8 then 
+    f = buffer(6,1):int()
+    if f >= 8 then 
     subtree:add_le(message_id,buffer(30,2)) -- only for incremental feed
     else 
     subtree:add_le(message_id,buffer(18,2)) -- only for snapshot feed
@@ -26,6 +26,6 @@ function simba_sbe_protocol.dissector(buffer, pinfo, tree)
 end
 local udp_port = DissectorTable.get("udp.port")
 udp_port:add(20082, simba_sbe_protocol)
---udp_port:add(20082, simba_sbe_protocol) 
+udp_port:add(20081, simba_sbe_protocol) 
 -- snapshot feed for 20082
 -- incremental feed 20081
