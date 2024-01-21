@@ -1,7 +1,10 @@
+#pragma once
 #include <cstdint>
+#include <string_view>
+#include <cstdlib>
 namespace simba::schema::bitmasks {
 
-enum class MDFlagsSet : std::uint64_t {
+enum MDFlagsSet : std::uint64_t {
   DAY = (1 << 0),
   IOC = (1 << 1),
   NonQuote = (1 << 2),
@@ -18,31 +21,69 @@ enum class MDFlagsSet : std::uint64_t {
   COD = 1ULL << 32,
   ActiveSide = 1ULL << 41,
   PassiveSide = 1ULL << 42,
-  Syntheic = 1ULL << 45,
+  Synthetic = 1ULL << 45,
   RFS = 1ULL << 46,
   SyntheticPassive = 1ULL << 57,
   BOC = 1ULL << 60,
   DuringDiscreteAuction = 1ULL << 62
 };
 
-enum class MDFlags2Set : std::uint64_t { Zero = 1 << 0 };
+inline std::string_view sv(MDFlagsSet flag) {
+  switch (flag) {
+  case MDFlagsSet::DAY:
+    return "DAY";
+  case MDFlagsSet::IOC:
+    return "IOC";
+  case MDFlagsSet::NonQuote:
+    return "NonQuote";
+  case MDFlagsSet::EndOfTransaction:
+    return "EndOfTransaction";
+  case MDFlagsSet::DueToCrossCancel:
+    return "DueToCrossCancel";
+  case MDFlagsSet::SecondLeg:
+    return "SecondLeg";
+  case MDFlagsSet::FOK : return "FOK";
+  case MDFlagsSet::Replace:
+    return "Replace";
+  case MDFlagsSet::Cancel:
+    return "Cancel";
+  case MDFlagsSet::MassCancel:
+    return "MassCancel";
+  case MDFlagsSet::Negotiated:
+    return "Negotiated";
+  case MDFlagsSet::MultiLeg:
+    return "Multileg";
+  case MDFlagsSet::CrossTrade :
+    return "CrossTrade";
+  case MDFlagsSet::COD:
+    return "COD";
+  case MDFlagsSet::ActiveSide:
+    return "ActiveSide";
+  case MDFlagsSet::PassiveSide:
+    return "PassiveSide";
+  case MDFlagsSet::Synthetic:
+    return "Synthetic";
+  case MDFlagsSet::RFS:
+    return "RFS";
+  case MDFlagsSet::SyntheticPassive:
+    return "SyntheticPassive";
+  case MDFlagsSet::BOC:
+    return "BOC";
+  case MDFlagsSet::DuringDiscreteAuction:
+    return "DuringDiscreteAuction";
+  default:
+    return "";
+  }
+  std::abort();
+}
 
-enum class FlagsSet : std::uint64_t {
-  EveningOrMorningSession = 1 << 0,
-  AnnonymousTrading = 1 << 4,
-  PrivateTrading = 1 << 5,
-  DaySession = 1 << 6,
-  // name collision for multileg may be use enum class
-  Multileg = 1 << 8,
-  Collateral = 1 << 18,
-  IntradayExercise = 1 << 19
-};
-enum class MsgFlagsSet : std::uint16_t {
-  LastFragment = 1 << 0,
-  StartOfSnapShot = 1 << 1,
-  EndOfSnapShot = 1 << 2,
-  IncrementalPacket = 1 << 3,
-  PossDupFlag = 1 << 4
-};
+enum MDFlags2Set : std::uint64_t { Zero = 1 };
 
-} // namespace simba_schema::bitmasks
+inline std::string_view sv(MDFlags2Set flag){
+  switch(flag){
+    case MDFlags2Set::Zero: return "Zero";
+  }
+  std::abort();
+}
+
+} // namespace simba::schema::bitmasks

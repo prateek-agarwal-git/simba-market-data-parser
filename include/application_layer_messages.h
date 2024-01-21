@@ -44,8 +44,8 @@ struct OrderUpdate {
   std::int64_t MDEntryId;
   schema::types::Decimal5 MDentryPx;
   std::int64_t MDEntrySize;
-  schema::bitmasks::MDFlagsSet MDFlags;
-  schema::bitmasks::MDFlags2Set MDFlags2;
+  std::uint64_t MDFlags;
+  std::uint64_t MDFlags2;
   std::int32_t SecurityId;
   std::uint32_t RptSeq;
   schema::enums::MDUpdateAction MDUpdateAction;
@@ -62,8 +62,8 @@ struct OrderExecution {
   schema::types::Decimal5 LastPx;
   std::int64_t LastQty;
   std::int64_t TradeId;
-  schema::bitmasks::MDFlagsSet MDFlags;
-  schema::bitmasks::MDFlags2Set MDFlags2;
+  std::uint64_t MDFlags;
+  std::uint64_t MDFlags2;
   std::int32_t SecurityId;
   std::uint32_t RptSeq;
   schema::enums::MDUpdateAction MDUpdateAction;
@@ -76,8 +76,8 @@ struct SnapShotEntry {
   schema::types::Decimal5Null MDEntryPx;
   schema::types::Int64NULL MDEntrySize;
   schema::types::Int64NULL TradeId;
-  schema::bitmasks::MDFlagsSet MDFlags;
-  schema::bitmasks::MDFlags2Set MDFlags2;
+  std::uint64_t MDFlags;
+  std::uint64_t MDFlags2;
   schema::enums::MDEntryType MDEntryType;
 };
 
