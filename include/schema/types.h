@@ -15,9 +15,7 @@ struct NullValues{
 struct Decimal5 {
   std::int64_t mantissa;
   static constexpr double exponent = 1e-5;
-  double value() const{
-    return exponent* mantissa;
-  }
+  
   std::string to_string() const{
     return "";
   }
@@ -29,9 +27,7 @@ struct Decimal5Null {
     return mantissa.has_value();
 
   }
-  double value() const{
-    return exponent* mantissa.value();
-  }
+  
   std::string to_string() const{
     return "";
   }
@@ -43,9 +39,7 @@ struct Decimal2Null {
   bool has_value()const{
     return mantissa.has_value();
   }
-  double value() const{
-    return exponent* mantissa.value();
-  }
+  
   std::string to_string() const{
     return "";
   }

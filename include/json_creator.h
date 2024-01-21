@@ -8,9 +8,16 @@
 #include <string_view>
 #include <type_traits>
 namespace simba {
+struct start_packet {};
+struct end_packet {};
 struct JsonCreator {
+
   using WriterCallback = std::function<void(const std::string &)>;
   JsonCreator(WriterCallback &&cb);
+  void operator()(start_packet);
+  void operator()(end_packet);
+  void operator()(const simba::schema::structs::MarketDataPacketHeader &);
+  void operator()(const simba::schema::structs::IncrementalPacketHeader &);
   void operator()(const simba::messages::application_layer::BestPrices &);
   void operator()(const simba::messages::application_layer::OrderUpdate &);
   void operator()(const simba::messages::application_layer::OrderExecution &);
@@ -18,24 +25,16 @@ struct JsonCreator {
   operator()(const simba::messages::application_layer::OrderBookSnapShot &);
 
 private:
-  std::string get_json_string(const schema::structs::SBEHeader &);
-  std::string get_json_string(const schema::structs::groupSize &);
-  std::string
-  get_json_string(const messages::application_layer::BestPricesEntry &);
-
-  std::string
-  get_json_string(const messages::application_layer::SnapShotEntry &);
+  void add_element(const schema::structs::SBEHeader &);
+  void add_element(const schema::structs::groupSize &);
+  void add_element(const messages::application_layer::BestPricesEntry &);
+  void add_element(const messages::application_layer::SnapShotEntry &);
   static std::string add_key(const std::string &field_name) {
     return double_quote + field_name + double_quote + colon;
   }
   template <typename T>
   static std::string add_numeric_value(T value, bool is_last = false) {
     return std::to_string(value) + (is_last ? "" : comma);
-  }
-
-  static std::string add_numeric_value(schema::types::Decimal5 value,
-                                       bool is_last = false) {
-    return std::to_string(value.value()) + (is_last ? "" : comma);
   }
 
   template <typename T>
@@ -53,15 +52,28 @@ private:
   }
 
   template <typename T>
-  std::string add_numeric_record(const std::string &key, T value,
-                                 bool is_last = false) {
+  requires(!simba::schema::types::is_decimal_t<T>) std::string
+      add_numeric_record(const std::string &key, T value,
+                         bool is_last = false) {
     return add_key(key) + add_numeric_value(value, is_last);
   }
 
   template <typename T>
   requires simba::schema::types::is_decimal_t<T> std::string
   add_numeric_record(const std::string &key, T value, bool is_last = false) {
-    return add_key(key) + value.to_string();
+    return add_key(key) + value.to_string() + (is_last ? "" : comma);
+  }
+
+  template <typename T>
+  std::string add_enum_record(const std::string &key, T val,
+                              bool is_last = false) {
+    return add_key(key);
+  }
+
+  template <typename T>
+  std::string add_bitmask_record(const std::string &key, T val,
+                                 bool is_last = false) {
+    return add_key(key);
   }
 
   static inline const std::string colon = ": ";
@@ -71,6 +83,7 @@ private:
   static inline const std::string end_brace = "}";
   static inline const std::string start_array = "[";
   static inline const std::string end_array = "]";
+  std::string current_json_string_;
 
   WriterCallback cb_;
 };

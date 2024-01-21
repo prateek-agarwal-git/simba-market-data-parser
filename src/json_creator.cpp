@@ -2,154 +2,166 @@
 #include <iostream>
 #include <sstream>
 namespace simba {
-JsonCreator::JsonCreator(WriterCallback &&cb) : cb_(std::move(cb)) {}
+JsonCreator::JsonCreator(WriterCallback &&cb) : cb_(std::move(cb)) {
+  current_json_string_.reserve(2048);
+}
+
+void JsonCreator::operator()(start_packet) {}
+void JsonCreator::operator()(end_packet) {
+  cb_(current_json_string_);
+  current_json_string_.clear();
+}
+
+void JsonCreator::operator()(
+    const simba::schema::structs::MarketDataPacketHeader &mdp_header) {
+  std::string current_json_string_;
+  current_json_string_ += start_brace;
+  current_json_string_ += add_key("MDPHeader");
+  current_json_string_ += start_brace;
+  current_json_string_ += add_numeric_record("MsgSeqNum", mdp_header.MsgSeqNum);
+  current_json_string_ += add_numeric_record("MsgSize", mdp_header.MsgSize);
+  current_json_string_ += add_numeric_record("MsgFlags", mdp_header.MsgFlags);
+  current_json_string_ += add_numeric_record("SendingTime", mdp_header.SendingTime);
+  current_json_string_ += end_brace;
+  current_json_string_ += end_brace;
+}
+void JsonCreator::operator()(
+    const simba::schema::structs::IncrementalPacketHeader &incremental_header) {
+  std::string current_json_string_;
+  current_json_string_ += start_brace;
+  current_json_string_ += add_key("IncrementalHeader");
+  current_json_string_ += start_brace;
+  current_json_string_ += add_numeric_record("Trcurrent_json_string_actTime", incremental_header.TransactTime);
+  current_json_string_ += add_numeric_record("ExchangeTradingSessionId",
+                            incremental_header.ExchangeTradingSessionId);
+  current_json_string_ += end_brace;
+  current_json_string_ += end_brace;
+}
 void JsonCreator::operator()(
     const simba::messages::application_layer::BestPrices &best_prices) {
-  std::string ans;
-  ans += start_brace;
-  ans += add_key("BestPrices");
-  ans += start_brace;
-  ans += get_json_string(best_prices.S);
-  ans += comma;
-  ans += get_json_string(best_prices.NoMDEntries);
+  std::string current_json_string_;
+  current_json_string_ += start_brace;
+  current_json_string_ += add_key("BestPrices");
+  current_json_string_ += start_brace;
+  add_element(best_prices.S);
+  current_json_string_ += comma;
+  add_element(best_prices.NoMDEntries);
   for (const auto &entry : best_prices.Entries) {
-    auto entry_json = get_json_string(entry);
+    add_element(entry);
     // add array specific delimiters here
-    ans += entry_json;
   }
 }
 void JsonCreator::operator()(
     const simba::messages::application_layer::OrderUpdate &order_update) {
-  std::string ans;
-  ans += start_brace;
-  ans += add_key("OrderUpdate");
-  ans += start_brace;
-  ans += get_json_string(order_update.S);
-  ans += comma;
-  ans += add_numeric_record("MDEntryId",order_update.MDEntryId);
-  // ans += add_key("MDEntryPx");
-  // ans += add_numeric_value(order_update.MDEntryPx);
-  // ans += add_key("MDFlags");
-  // ans += add_numeric_value(order_update.MDFlags);
-  // ans += add_key("MDFlags2");
-  // ans += add_numeric_value(order_update.MDFlags2);
-
-  ans += add_numeric_record("SecurityId", order_update.SecurityId);
-  ans += add_numeric_record("RptSeq", order_update.RptSeq);
-  // ans += add_key("MDUpdateAction");
-  // ans += add_numeric_value(order_update.MDUpdateAction);
-  // ans += add_key("MDEntryType");
-  // ans += add_numeric_value(order_update.MDEntryType);
-  ans += end_brace;
-  ans += end_brace;
-  cb_(ans);
+  std::string current_json_string_;
+  current_json_string_ += start_brace;
+  current_json_string_ += add_key("OrderUpdate");
+  current_json_string_ += start_brace;
+  add_element(order_update.S);
+  current_json_string_ += comma;
+  current_json_string_ += add_numeric_record("MDEntryId", order_update.MDEntryId);
+  current_json_string_ += add_numeric_record("MDEntryPx", order_update.MDEntryPx);
+  current_json_string_ += add_bitmask_record("MDFlags", order_update.MDFlags);
+  current_json_string_ += add_bitmask_record("MDFlags2", order_update.MDFlags2);
+  current_json_string_ += add_numeric_record("SecurityId", order_update.SecurityId);
+  current_json_string_ += add_numeric_record("RptSeq", order_update.RptSeq);
+  current_json_string_ += add_enum_record("MDUpdateAction", order_update.MDUpdateAction);
+  current_json_string_ += add_enum_record("MDEntryType", order_update.MDEntryType);
+  current_json_string_ += end_brace;
+  current_json_string_ += end_brace;
 }
 void JsonCreator::operator()(
     const simba::messages::application_layer::OrderExecution &order_execution) {
-  std::string ans;
-  ans += start_brace;
-  ans += add_key("OrderExecution");
-  ans += start_brace;
-  ans += get_json_string(order_execution.S);
-  ans += comma;
-  ans += add_numeric_record("MDEntryId", order_execution.MDEntryId);
-  ans += add_optional_record("MDEntryPx", order_execution.MDEntryPx);
-  ans += add_optional_record("MDEntrySize", order_execution.MDEntrySize);
-  ans += add_numeric_record("LastPx", order_execution.LastPx);
-  ans += add_numeric_record("LastQty", order_execution.LastQty);
-  ans += add_numeric_record("TradeId", order_execution.TradeId);
+  std::string current_json_string_;
+  current_json_string_ += start_brace;
+  current_json_string_ += add_key("OrderExecution");
+  current_json_string_ += start_brace;
+  add_element(order_execution.S);
+  current_json_string_ += comma;
+  current_json_string_ += add_numeric_record("MDEntryId", order_execution.MDEntryId);
+  current_json_string_ += add_optional_record("MDEntryPx", order_execution.MDEntryPx);
+  current_json_string_ += add_optional_record("MDEntrySize", order_execution.MDEntrySize);
+  current_json_string_ += add_numeric_record("LastPx", order_execution.LastPx);
+  current_json_string_ += add_numeric_record("LastQty", order_execution.LastQty);
+  current_json_string_ += add_numeric_record("TradeId", order_execution.TradeId);
 
-  // ans += add_numeric_record("MDFlags",order_execution.MDFlags);
-  // ans += add_numeric_record("MDFlags2",order_execution.MDFlags2);
-  ans += add_numeric_record("SecurityId", order_execution.SecurityId);
+  current_json_string_ += add_bitmask_record("MDFlags", order_execution.MDFlags);
+  current_json_string_ += add_bitmask_record("MDFlags2", order_execution.MDFlags2);
+  current_json_string_ += add_numeric_record("SecurityId", order_execution.SecurityId);
 
-  ans += add_numeric_record("RptSeq", order_execution.RptSeq);
-  // ans += add_key("MDUpdateAction");
-  // ans += add_numeric_value(order_update.MDUpdateAction);
-  // ans += add_key("MDEntryType");
-  // ans += add_numeric_value(order_update.MDEntryType);
+  current_json_string_ += add_numeric_record("RptSeq", order_execution.RptSeq);
+  current_json_string_ += add_enum_record("MDUpdateAction", order_execution.MDUpdateAction);
+  current_json_string_ += add_enum_record("MDEntryType", order_execution.MDEntryType);
 
-  ans += end_brace;
-  ans += end_brace;
-  cb_(ans);
+  current_json_string_ += end_brace;
+  current_json_string_ += end_brace;
 }
 void JsonCreator::operator()(
     const simba::messages::application_layer::OrderBookSnapShot
         &order_snapshot) {
-  std::string ans;
-  ans += start_brace;
-  ans += add_key("OrderBookSnapShot");
-  ans += start_brace;
-  ans += get_json_string(order_snapshot.S);
-  ans += comma;
-  ans += add_numeric_record("SecurityId", order_snapshot.SecurityId);
-  ans += add_numeric_record("LastMsgSeqNumProcessed",
+  current_json_string_ += start_brace;
+  current_json_string_ += add_key("OrderBookSnapShot");
+  current_json_string_ += start_brace;
+  add_element(order_snapshot.S);
+  current_json_string_ += comma;
+  current_json_string_ += add_numeric_record("SecurityId", order_snapshot.SecurityId);
+  current_json_string_ += add_numeric_record("LastMsgSeqNumProcessed",
                             order_snapshot.LastMsgSeqNumProcessed);
-  ans += add_numeric_record("RptSeq", order_snapshot.RptSeq);
-  ans += add_numeric_record("ExchangeTradingSessionId",
+  current_json_string_ += add_numeric_record("RptSeq", order_snapshot.RptSeq);
+  current_json_string_ += add_numeric_record("ExchangeTradingSessionId",
                             order_snapshot.ExchangeTradingSessionId);
-  ans += get_json_string(order_snapshot.NoMDEntries);
+  add_element(order_snapshot.NoMDEntries);
   for (const auto &entry : order_snapshot.Entries) {
-    auto entry_json = get_json_string(entry);
+    add_element(entry);
     // add array specific delimiters here
-    ans += entry_json;
   }
 }
 
-std::string JsonCreator::get_json_string(const schema::structs::SBEHeader &S) {
-  std::string ans;
-  ans += add_key("SBEHeader");
-  ans += start_brace;
-  ans += add_numeric_record("BlockLength", S.BlockLength);
-  ans += add_numeric_record("TemplateId", S.TemplateId);
-  ans += add_numeric_record("SchemaId", S.SchemaId);
-  ans += add_numeric_record("Version", S.Version, true);
-  ans += add_key("Version");
-  ans += add_numeric_value(S.Version, true /*is_last*/);
-  ans += end_brace;
-  return ans;
+void JsonCreator::add_element(const schema::structs::SBEHeader &S) {
+  current_json_string_ += add_key("SBEHeader");
+  current_json_string_ += start_brace;
+  current_json_string_ += add_numeric_record("BlockLength", S.BlockLength);
+  current_json_string_ += add_numeric_record("TemplateId", S.TemplateId);
+  current_json_string_ += add_numeric_record("SchemaId", S.SchemaId);
+  current_json_string_ += add_numeric_record("Version", S.Version, true);
+  current_json_string_ += add_key("Version");
+  current_json_string_ += add_numeric_value(S.Version, true /*is_last*/);
+  current_json_string_ += end_brace;
 }
 
-std::string JsonCreator::get_json_string(const schema::structs::groupSize &G) {
-  std::string ans;
-  ans += add_key("NoMDEntries");
-  ans += start_brace;
-  ans += add_numeric_record("blockLength", G.blockLength);
-  ans += add_numeric_record("numInGroup", G.numInGroup, true /*is_last*/);
-  ans += end_brace;
-  return ans;
+void JsonCreator::add_element(const schema::structs::groupSize &G) {
+  current_json_string_ += add_key("NoMDEntries");
+  current_json_string_ += start_brace;
+  current_json_string_ += add_numeric_record("blockLength", G.blockLength);
+  current_json_string_ += add_numeric_record("numInGroup", G.numInGroup, true /*is_last*/);
+  current_json_string_ += end_brace;
 }
 
-std::string JsonCreator::get_json_string(
+void JsonCreator::add_element(
     const messages::application_layer::BestPricesEntry &entry) {
-  std::string ans;
-  ans += add_key("BestPricesEntry");
-  ans += start_brace;
-  ans += add_optional_record("MktBidPx", entry.MktBidPx);
-  ans += add_optional_record("MktOfferPx", entry.MktOfferPx);
-  ans += add_optional_record("MktBidSize", entry.MktBidSize);
-  ans += add_optional_record("MktOfferSize", entry.MktOfferSize);
-  ans += add_numeric_record("SecurityId", entry.SecurityId, true /*is_last*/);
-  ans += end_brace;
-  return ans;
+  current_json_string_ += add_key("BestPricesEntry");
+  current_json_string_ += start_brace;
+  current_json_string_ += add_optional_record("MktBidPx", entry.MktBidPx);
+  current_json_string_ += add_optional_record("MktOfferPx", entry.MktOfferPx);
+  current_json_string_ += add_optional_record("MktBidSize", entry.MktBidSize);
+  current_json_string_ += add_optional_record("MktOfferSize", entry.MktOfferSize);
+  current_json_string_ += add_numeric_record("SecurityId", entry.SecurityId, true /*is_last*/);
+  current_json_string_ += end_brace;
 }
 
-std::string JsonCreator::get_json_string(
+void JsonCreator::add_element(
     const messages::application_layer::SnapShotEntry &entry) {
-  std::string ans;
-  ans += add_key("SnapShotEntry");
-  ans += start_brace;
-  ans += add_optional_record("MDEntryId", entry.MDEntryId);
-  ans += add_numeric_record("TransactTime", entry.TransactTime);
-  ans += add_optional_record("MDEntryPx", entry.MDEntryPx);
-  ans += add_optional_record("MDEntrySize", entry.MDEntrySize);
-  ans += add_optional_record("TradeId", entry.TradeId);
-  //  std::uint64_t MDFlags;
-  //  std::uint64_t MDFlags2;
-  //  schema::enums::MDEntryType MDEntryType;
-
-  ans += end_brace;
-  return ans;
+  current_json_string_ += add_key("SnapShotEntry");
+  current_json_string_ += start_brace;
+  current_json_string_ += add_optional_record("MDEntryId", entry.MDEntryId);
+  current_json_string_ += add_numeric_record("TransactTime", entry.TransactTime);
+  current_json_string_ += add_optional_record("MDEntryPx", entry.MDEntryPx);
+  current_json_string_ += add_optional_record("MDEntrySize", entry.MDEntrySize);
+  current_json_string_ += add_optional_record("TradeId", entry.TradeId);
+  current_json_string_ += add_bitmask_record("MDFlags", entry.MDFlags);
+  current_json_string_ += add_bitmask_record("MDFlags2", entry.MDFlags2);
+  current_json_string_ += add_enum_record("MDEntryType", entry.MDEntryType);
+  current_json_string_ += end_brace;
 }
 
 } // namespace simba
