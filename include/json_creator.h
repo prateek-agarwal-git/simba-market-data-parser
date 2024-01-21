@@ -21,8 +21,7 @@ struct JsonCreator {
   void operator()(const messages::application_layer::BestPrices &);
   void operator()(const messages::application_layer::OrderUpdate &);
   void operator()(const messages::application_layer::OrderExecution &);
-  void
-  operator()(const messages::application_layer::OrderBookSnapShot &);
+  void operator()(const messages::application_layer::OrderBookSnapShot &);
 
 private:
   void add_element(const schema::structs::SBEHeader &);
@@ -30,7 +29,20 @@ private:
   void add_element(const messages::application_layer::BestPricesEntry &);
   void add_element(const messages::application_layer::SnapShotEntry &);
   void end_main_element();
-  void start_main_element(const std::string& key);
+  void start_main_element(const std::string &key);
+
+  template <typename T>
+  void add_array(const std::string &key, const std::vector<T> &entries) {
+    current_json_string_ += add_key(key);
+    current_json_string_ += "[";
+    for (const auto &entry : entries) {
+      add_element(entry);
+      current_json_string_ += comma;
+    }
+    current_json_string_.pop_back();
+    current_json_string_.pop_back();
+    current_json_string_ += "]";
+  }
   static std::string add_key(const std::string &field_name) {
     return double_quote + field_name + double_quote + colon;
   }
@@ -69,13 +81,15 @@ private:
   template <typename T>
   std::string add_enum_record(const std::string &key, T val,
                               bool is_last = false) {
-    return add_key(key) + double_quote+schema::enums::to_string(val)+double_quote+(is_last ? "" : comma);
+    return add_key(key) + double_quote + schema::enums::to_string(val) +
+           double_quote + (is_last ? "" : comma);
   }
 
   template <typename T>
   std::string add_bitmask_record(const std::string &key, uint64_t val,
                                  bool is_last = false) {
-    return add_key(key)+double_quote+schema::bitmasks::to_string<T>(val)+double_quote+(is_last ? "" : comma);
+    return add_key(key) + double_quote + schema::bitmasks::to_string<T>(val) +
+           double_quote + (is_last ? "" : comma);
   }
 
   static inline const std::string colon = ": ";

@@ -32,10 +32,11 @@ void JsonCreator::operator()(
 void JsonCreator::operator()(
     const schema::structs::IncrementalPacketHeader &incremental_header) {
   start_main_element("IncrementalHeader");
-  current_json_string_ += add_numeric_record("Trcurrent_json_string_actTime",
-                                             incremental_header.TransactTime);
-  current_json_string_ += add_numeric_record(
-      "ExchangeTradingSessionId", incremental_header.ExchangeTradingSessionId);
+  current_json_string_ +=
+      add_numeric_record("TransactTime", incremental_header.TransactTime);
+  current_json_string_ +=
+      add_numeric_record("ExchangeTradingSessionId",
+                         incremental_header.ExchangeTradingSessionId, true);
 
   end_main_element();
 }
@@ -45,11 +46,8 @@ void JsonCreator::operator()(
   add_element(best_prices.S);
   current_json_string_ += comma;
   add_element(best_prices.NoMDEntries);
-  for (const auto &entry : best_prices.Entries) {
-    add_element(entry);
-    // add array specific delimiters here
-  }
-
+  current_json_string_ += comma;
+  add_array("Entries", best_prices.Entries);
   end_main_element();
 }
 void JsonCreator::operator()(
@@ -105,7 +103,7 @@ void JsonCreator::operator()(
   current_json_string_ +=
       add_enum_record("MDUpdateAction", order_execution.MDUpdateAction);
   current_json_string_ +=
-      add_enum_record("MDEntryType", order_execution.MDEntryType);
+      add_enum_record("MDEntryType", order_execution.MDEntryType, true);
 
   end_main_element();
 }
@@ -122,10 +120,8 @@ void JsonCreator::operator()(
   current_json_string_ += add_numeric_record(
       "ExchangeTradingSessionId", order_snapshot.ExchangeTradingSessionId);
   add_element(order_snapshot.NoMDEntries);
-  for (const auto &entry : order_snapshot.Entries) {
-    add_element(entry);
-    // add array specific delimiters here
-  }
+  current_json_string_ += comma;
+  add_array("Snapshots", order_snapshot.Entries);
   end_main_element();
 }
 
