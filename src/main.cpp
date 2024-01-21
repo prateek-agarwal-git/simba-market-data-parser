@@ -1,5 +1,7 @@
 #include <fcntl.h>
 #include <string_view>
+#include <iostream>
+#include "application_layer_messages.h"
 
 static constexpr std::string_view usage = R"( 
 Usage: ./<binary-name> --out_file=response.json --infile=infile.dat--logfile_path=log.txt
@@ -10,6 +12,7 @@ is provided or the path is invalid, the input is taken from the terminal. The de
 
 
 int main(int argc, char **argv) {
+	std::cout <<"hello world"<< std::endl;
 //  const auto [num_runs, infile_path, logfile_path] =
 //      commandline::parse_commandline(argc, argv);
 //  if (argc == 1) {
