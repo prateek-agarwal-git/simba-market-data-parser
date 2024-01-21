@@ -2,6 +2,8 @@
 #include <optional>
 #include <string>
 #include <limits>
+#include <type_traits>
+#include <concepts>
 
 namespace simba::schema::types {
 using Int64NULL = std::optional<int64_t>;
@@ -16,6 +18,9 @@ struct Decimal5 {
   double value() const{
     return exponent* mantissa;
   }
+  std::string to_string() const{
+    return "";
+  }
 };
 struct Decimal5Null {
   std::optional<int64_t> mantissa;
@@ -26,6 +31,9 @@ struct Decimal5Null {
   }
   double value() const{
     return exponent* mantissa.value();
+  }
+  std::string to_string() const{
+    return "";
   }
 };
 
@@ -38,6 +46,14 @@ struct Decimal2Null {
   double value() const{
     return exponent* mantissa.value();
   }
+  std::string to_string() const{
+    return "";
+  }
 };
+
+
+template <typename T>
+concept is_decimal_t = std::is_same_v<T, Decimal2Null> ||std::is_same_v<T, Decimal5> || std::is_same_v <T, Decimal5Null >;
+
 
 } // namespace simba::schema::types

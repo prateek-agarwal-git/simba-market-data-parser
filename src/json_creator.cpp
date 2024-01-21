@@ -26,18 +26,16 @@ void JsonCreator::operator()(
   ans += start_brace;
   ans += get_json_string(order_update.S);
   ans += comma;
-  ans += add_key("MDEntryId");
-  ans += add_numeric_value(order_update.MDEntryId);
+  ans += add_numeric_record("MDEntryId",order_update.MDEntryId);
   // ans += add_key("MDEntryPx");
   // ans += add_numeric_value(order_update.MDEntryPx);
   // ans += add_key("MDFlags");
   // ans += add_numeric_value(order_update.MDFlags);
   // ans += add_key("MDFlags2");
   // ans += add_numeric_value(order_update.MDFlags2);
-  ans += add_key("SecurityId");
-  ans += add_numeric_value(order_update.SecurityId);
-  ans += add_key("RptSeq");
-  ans += add_numeric_value(order_update.RptSeq);
+
+  ans += add_numeric_record("SecurityId", order_update.SecurityId);
+  ans += add_numeric_record("RptSeq", order_update.RptSeq);
   // ans += add_key("MDUpdateAction");
   // ans += add_numeric_value(order_update.MDUpdateAction);
   // ans += add_key("MDEntryType");
@@ -54,28 +52,18 @@ void JsonCreator::operator()(
   ans += start_brace;
   ans += get_json_string(order_execution.S);
   ans += comma;
-  ans += add_key("MDEntryId");
-  ans += add_numeric_value(order_execution.MDEntryId);
+  ans += add_numeric_record("MDEntryId", order_execution.MDEntryId);
   ans += add_optional_record("MDEntryPx", order_execution.MDEntryPx);
   ans += add_optional_record("MDEntrySize", order_execution.MDEntrySize);
-  ans += add_key("LastPx");
-  ans += add_numeric_value(order_execution.MDEntrySize.value());
-  ans += add_key("LastQty");
-  ans += add_numeric_value(order_execution.LastQty);
-  ans += add_key("TradeId");
-  ans += add_numeric_value(order_execution.TradeId);
+  ans += add_numeric_record("LastPx", order_execution.LastPx);
+  ans += add_numeric_record("LastQty", order_execution.LastQty);
+  ans += add_numeric_record("TradeId", order_execution.TradeId);
 
-  //  ans += add_key("MDFlags");
-  //  ans += add_numeric_value(order_execution.MDFlags);
-  //
-  //  ans += add_key("MDFlags2");
-  //  ans += add_numeric_value(order_execution.MDFlags2);
+  // ans += add_numeric_record("MDFlags",order_execution.MDFlags);
+  // ans += add_numeric_record("MDFlags2",order_execution.MDFlags2);
+  ans += add_numeric_record("SecurityId", order_execution.SecurityId);
 
-  ans += add_key("SecurityId");
-  ans += add_numeric_value(order_execution.SecurityId);
-
-  ans += add_key("RptSeq");
-  ans += add_numeric_value(order_execution.RptSeq);
+  ans += add_numeric_record("RptSeq", order_execution.RptSeq);
   // ans += add_key("MDUpdateAction");
   // ans += add_numeric_value(order_update.MDUpdateAction);
   // ans += add_key("MDEntryType");
@@ -94,15 +82,12 @@ void JsonCreator::operator()(
   ans += start_brace;
   ans += get_json_string(order_snapshot.S);
   ans += comma;
-  ans += add_key("SecurityId");
-  ans += add_numeric_value(order_snapshot.SecurityId);
-
-  ans += add_key("LastMsgSeqNumProcessed");
-  ans += add_numeric_value(order_snapshot.LastMsgSeqNumProcessed);
-  ans += add_key("RptSeq");
-  ans += add_numeric_value(order_snapshot.RptSeq);
-  ans += add_key("ExchangeTradingSessionId");
-  ans += add_numeric_value(order_snapshot.ExchangeTradingSessionId);
+  ans += add_numeric_record("SecurityId", order_snapshot.SecurityId);
+  ans += add_numeric_record("LastMsgSeqNumProcessed",
+                            order_snapshot.LastMsgSeqNumProcessed);
+  ans += add_numeric_record("RptSeq", order_snapshot.RptSeq);
+  ans += add_numeric_record("ExchangeTradingSessionId",
+                            order_snapshot.ExchangeTradingSessionId);
   ans += get_json_string(order_snapshot.NoMDEntries);
   for (const auto &entry : order_snapshot.Entries) {
     auto entry_json = get_json_string(entry);
@@ -115,12 +100,10 @@ std::string JsonCreator::get_json_string(const schema::structs::SBEHeader &S) {
   std::string ans;
   ans += add_key("SBEHeader");
   ans += start_brace;
-  ans += add_key("BlockLength");
-  ans += add_numeric_value(S.BlockLength);
-  ans += add_key("TemplateId");
-  ans += add_numeric_value(S.TemplateId);
-  ans += add_key("SchemaId");
-  ans += add_numeric_value(S.SchemaId);
+  ans += add_numeric_record("BlockLength", S.BlockLength);
+  ans += add_numeric_record("TemplateId", S.TemplateId);
+  ans += add_numeric_record("SchemaId", S.SchemaId);
+  ans += add_numeric_record("Version", S.Version, true);
   ans += add_key("Version");
   ans += add_numeric_value(S.Version, true /*is_last*/);
   ans += end_brace;
@@ -131,10 +114,8 @@ std::string JsonCreator::get_json_string(const schema::structs::groupSize &G) {
   std::string ans;
   ans += add_key("NoMDEntries");
   ans += start_brace;
-  ans += add_key("blockLength");
-  ans += add_numeric_value(G.blockLength);
-  ans += add_key("numInGroup");
-  ans += add_numeric_value(G.numInGroup);
+  ans += add_numeric_record("blockLength", G.blockLength);
+  ans += add_numeric_record("numInGroup", G.numInGroup, true /*is_last*/);
   ans += end_brace;
   return ans;
 }
@@ -148,8 +129,7 @@ std::string JsonCreator::get_json_string(
   ans += add_optional_record("MktOfferPx", entry.MktOfferPx);
   ans += add_optional_record("MktBidSize", entry.MktBidSize);
   ans += add_optional_record("MktOfferSize", entry.MktOfferSize);
-  ans += add_key("SecurityId");
-  ans += add_numeric_value(entry.SecurityId);
+  ans += add_numeric_record("SecurityId", entry.SecurityId, true /*is_last*/);
   ans += end_brace;
   return ans;
 }
@@ -160,8 +140,7 @@ std::string JsonCreator::get_json_string(
   ans += add_key("SnapShotEntry");
   ans += start_brace;
   ans += add_optional_record("MDEntryId", entry.MDEntryId);
-  ans += add_key("TransactTime");
-  ans += add_numeric_value(entry.TransactTime);
+  ans += add_numeric_record("TransactTime", entry.TransactTime);
   ans += add_optional_record("MDEntryPx", entry.MDEntryPx);
   ans += add_optional_record("MDEntrySize", entry.MDEntrySize);
   ans += add_optional_record("TradeId", entry.TradeId);
