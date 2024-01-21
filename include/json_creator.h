@@ -29,6 +29,8 @@ private:
   void add_element(const schema::structs::groupSize &);
   void add_element(const messages::application_layer::BestPricesEntry &);
   void add_element(const messages::application_layer::SnapShotEntry &);
+  void end_main_element();
+  void start_main_element(const std::string& key);
   static std::string add_key(const std::string &field_name) {
     return double_quote + field_name + double_quote + colon;
   }
