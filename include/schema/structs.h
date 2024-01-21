@@ -1,4 +1,4 @@
-
+#pragma once
 #include <cstdint>
 namespace simba::schema::structs {
 struct MarketDataPacketHeader {

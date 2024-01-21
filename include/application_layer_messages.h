@@ -21,74 +21,73 @@ enum class MessageTypes : std::uint16_t {
   SecurityMassStatus = 19
 };
 
-// Packing required - no.
 struct BestPricesEntry {
-  schema::types::Decimal5Null MktBidPx;   // 645
-  schema::types::Decimal5Null MktOfferPx; // 646
-  schema::types::Int64NULL MktBidSize;    // 22001
-  schema::types::Int64NULL MktOfferSize;  // 22002
-  std::int32_t SecurityId;                // 48
+  schema::types::Decimal5Null MktBidPx;
+  schema::types::Decimal5Null MktOfferPx;
+  schema::types::Int64NULL MktBidSize;
+  schema::types::Int64NULL MktOfferSize;
+  std::int32_t SecurityId;
 };
 struct BestPrices {
-    schema::structs::SBEHeader S;
-    schema::structs::RepeatingGroupDimensions NoMDEntries; // tag = 256
-    std::vector<BestPricesEntry> Entries;
+  schema::structs::SBEHeader S;
+  schema::structs::RepeatingGroupDimensions NoMDEntries;
+  std::vector<BestPricesEntry> Entries;
 };
 
 struct EmptyBook {
-    schema::structs::SBEHeader S;
-    schema::types::uInt32NULL LastMsgSeqNumProcessed; // 369
+  schema::structs::SBEHeader S;
+  schema::types::uInt32NULL LastMsgSeqNumProcessed;
 };
 
 struct OrderUpdate {
-    schema::structs::SBEHeader S;
-    std::int64_t MDEntryId;                       // 278
-    schema::types::Decimal5 MDentryPx;            // 270
-    std::int64_t MDEntrySize;                     // 271
-    schema::bitmasks::MDFlagsSet MDFlags;         // 20017
-    schema::bitmasks::MDFlags2Set MDFlags2;       // 20050
-    std::int32_t SecurityId;                      // 48
-    std::uint32_t RptSeq;                         // 83
-    schema::enums::MDUpdateAction MDUpdateAction; // 279
-    schema::enums::MDEntryType MDEntryType;       // 269
+  schema::structs::SBEHeader S;
+  std::int64_t MDEntryId;
+  schema::types::Decimal5 MDentryPx;
+  std::int64_t MDEntrySize;
+  schema::bitmasks::MDFlagsSet MDFlags;
+  schema::bitmasks::MDFlags2Set MDFlags2;
+  std::int32_t SecurityId;
+  std::uint32_t RptSeq;
+  schema::enums::MDUpdateAction MDUpdateAction;
+  schema::enums::MDEntryType MDEntryType;
 }; // 58 bytes
 
 // same struct for full or partial execution as well as on calendar spreads.
 // The / difference is in the values of respective fields.
 struct OrderExecution {
-    schema::structs::SBEHeader S;
-    std::int64_t MDEntryId;                       // 278
-    schema::types::Decimal5Null MDentryPx;        // 270
-    schema::types::Int64NULL MDEntrySize;         // 271
-    schema::types::Decimal5 LastPx;               // 31
-    std::int64_t LastQty;                         // 32
-    std::int64_t TradeId;                         // 1003
-    schema::bitmasks::MDFlagsSet MDFlags;         // 20017
-    schema::bitmasks::MDFlags2Set MDFlags2;       // 20050
-    std::int32_t SecurityId;                      // 48
-    std::uint32_t RptSeq;                         // 83
-    schema::enums::MDUpdateAction MDUpdateAction; // 279
-    schema::enums::MDEntryType MDEntryType;       // 269
-}; // 82 bytes
-
-struct SnapShotEntry {
-    schema::types::Int64NULL MDEntryId;     // 278
-    std::uint64_t TransactTime;             // 60
-    schema::types::Decimal5Null MDEntryPx;  // 270
-    schema::types::Int64NULL MDEntrySize;   // 271
-    schema::types::Int64NULL TradeId;       // 1003
-    schema::bitmasks::MDFlagsSet MDFlags;   // 20017
-    schema::bitmasks::MDFlags2Set MDFlags2; // 20050
-    schema::enums::MDEntryType MDEntryType; // 269
+  schema::structs::SBEHeader S;
+  std::int64_t MDEntryId;
+  schema::types::Decimal5Null MDentryPx;
+  schema::types::Int64NULL MDEntrySize;
+  schema::types::Decimal5 LastPx;
+  std::int64_t LastQty;
+  std::int64_t TradeId;
+  schema::bitmasks::MDFlagsSet MDFlags;
+  schema::bitmasks::MDFlags2Set MDFlags2;
+  std::int32_t SecurityId;
+  std::uint32_t RptSeq;
+  schema::enums::MDUpdateAction MDUpdateAction;
+  schema::enums::MDEntryType MDEntryType;
 };
 
- struct OrderBookSnapShot {
+struct SnapShotEntry {
+  schema::types::Int64NULL MDEntryId;
+  std::uint64_t TransactTime;
+  schema::types::Decimal5Null MDEntryPx;
+  schema::types::Int64NULL MDEntrySize;
+  schema::types::Int64NULL TradeId;
+  schema::bitmasks::MDFlagsSet MDFlags;
+  schema::bitmasks::MDFlags2Set MDFlags2;
+  schema::enums::MDEntryType MDEntryType;
+};
+
+struct OrderBookSnapShot {
   schema::structs::SBEHeader S;
-  std::int32_t SecurityId;                               // 48
-  std::uint32_t LastMsgSeqNumProcessed;                  // 369
-  std::uint32_t RptSeq;                                  // 83
-  std::uint32_t ExchangeTradingSessionId;                // 5842
-  schema::structs::RepeatingGroupDimensions NoMDEntries; // tag = 268
+  std::int32_t SecurityId;
+  std::uint32_t LastMsgSeqNumProcessed;
+  std::uint32_t RptSeq;
+  std::uint32_t ExchangeTradingSessionId;
+  schema::structs::RepeatingGroupDimensions NoMDEntries;
   std::vector<SnapShotEntry> Entries;
 };
 

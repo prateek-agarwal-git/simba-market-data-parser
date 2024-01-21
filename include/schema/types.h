@@ -4,12 +4,6 @@
 #include <limits>
 
 namespace simba::schema::types {
-using String3 = char[3];
-using String4 = char[4];
-using String6 = char[6];
-using String25 = char[25];
-using String31 = char[31];
-using String256 = char[256];
 using Int64NULL = std::optional<int64_t>;
 using uInt32NULL = std::optional<uint32_t>;
 struct NullValues{
@@ -18,24 +12,32 @@ struct NullValues{
 
 struct Decimal5 {
   std::int64_t mantissa;
-  static constexpr std::int8_t exponent = -5;
+  static constexpr double exponent = 1e-5;
+  double value() const{
+    return exponent* mantissa;
+  }
 };
 struct Decimal5Null {
-  // TODO save null value somewhere
   std::optional<int64_t> mantissa;
-  static constexpr std::int8_t exponent = -5;
+  static constexpr double exponent = 1e-5;
+  bool has_value()const{
+    return mantissa.has_value();
+
+  }
+  double value() const{
+    return exponent* mantissa.value();
+  }
 };
 
 struct Decimal2Null {
   std::optional<int64_t> mantissa;
-  static constexpr std::int8_t exponent = -2;
+  static constexpr double exponent = 1e-2;
+  bool has_value()const{
+    return mantissa.has_value();
+  }
+  double value() const{
+    return exponent* mantissa.value();
+  }
 };
-struct VarString {
-  uint16_t length;
-  std::string s;
-};
-struct GroupSize2{
-std::uint16_t blockLength;
-std::uint16_t numInGroup;
-};
+
 } // namespace simba::schema::types
