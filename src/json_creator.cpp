@@ -14,23 +14,23 @@ void JsonCreator::operator()(end_packet) {
   current_json_string_.pop_back();
   current_json_string_.pop_back();
   current_json_string_ += end_brace;
-  current_json_string_+="\n";
+  current_json_string_ += "\n";
   cb_(current_json_string_);
   current_json_string_.clear();
 }
 
 void JsonCreator::operator()(
-    const simba::schema::structs::MarketDataPacketHeader &mdp_header) {
+    const schema::structs::MarketDataPacketHeader &mdp_header) {
   start_main_element("MDPHeader");
   current_json_string_ += add_numeric_record("MsgSeqNum", mdp_header.MsgSeqNum);
   current_json_string_ += add_numeric_record("MsgSize", mdp_header.MsgSize);
   current_json_string_ += add_numeric_record("MsgFlags", mdp_header.MsgFlags);
   current_json_string_ +=
-      add_numeric_record("SendingTime", mdp_header.SendingTime);
+      add_numeric_record("SendingTime", mdp_header.SendingTime, true);
   end_main_element();
 }
 void JsonCreator::operator()(
-    const simba::schema::structs::IncrementalPacketHeader &incremental_header) {
+    const schema::structs::IncrementalPacketHeader &incremental_header) {
   start_main_element("IncrementalHeader");
   current_json_string_ += add_numeric_record("Trcurrent_json_string_actTime",
                                              incremental_header.TransactTime);
@@ -40,7 +40,7 @@ void JsonCreator::operator()(
   end_main_element();
 }
 void JsonCreator::operator()(
-    const simba::messages::application_layer::BestPrices &best_prices) {
+    const messages::application_layer::BestPrices &best_prices) {
   start_main_element("BestPrices");
   add_element(best_prices.S);
   current_json_string_ += comma;
@@ -53,7 +53,7 @@ void JsonCreator::operator()(
   end_main_element();
 }
 void JsonCreator::operator()(
-    const simba::messages::application_layer::OrderUpdate &order_update) {
+    const messages::application_layer::OrderUpdate &order_update) {
   start_main_element("OrderUpdate");
   add_element(order_update.S);
   current_json_string_ += comma;
@@ -61,20 +61,24 @@ void JsonCreator::operator()(
       add_numeric_record("MDEntryId", order_update.MDEntryId);
   current_json_string_ +=
       add_numeric_record("MDEntryPx", order_update.MDEntryPx);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>("MDFlags", order_update.MDFlags);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>("MDFlags2", order_update.MDFlags2);
+  current_json_string_ +=
+      add_numeric_record("MDEntrySize", order_update.MDEntrySize);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>(
+      "MDFlags", order_update.MDFlags);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>(
+      "MDFlags2", order_update.MDFlags2);
   current_json_string_ +=
       add_numeric_record("SecurityId", order_update.SecurityId);
   current_json_string_ += add_numeric_record("RptSeq", order_update.RptSeq);
   current_json_string_ +=
       add_enum_record("MDUpdateAction", order_update.MDUpdateAction);
   current_json_string_ +=
-      add_enum_record("MDEntryType", order_update.MDEntryType);
+      add_enum_record("MDEntryType", order_update.MDEntryType, true);
 
   end_main_element();
 }
 void JsonCreator::operator()(
-    const simba::messages::application_layer::OrderExecution &order_execution) {
+    const messages::application_layer::OrderExecution &order_execution) {
   start_main_element("OrderExecution");
   add_element(order_execution.S);
   current_json_string_ += comma;
@@ -90,10 +94,10 @@ void JsonCreator::operator()(
   current_json_string_ +=
       add_numeric_record("TradeId", order_execution.TradeId);
 
-  current_json_string_ +=
-      add_bitmask_record<schema::bitmasks::MDFlagsSet>("MDFlags", order_execution.MDFlags);
-  current_json_string_ +=
-      add_bitmask_record<schema::bitmasks::MDFlags2Set>("MDFlags2", order_execution.MDFlags2);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>(
+      "MDFlags", order_execution.MDFlags);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>(
+      "MDFlags2", order_execution.MDFlags2);
   current_json_string_ +=
       add_numeric_record("SecurityId", order_execution.SecurityId);
 
@@ -106,8 +110,7 @@ void JsonCreator::operator()(
   end_main_element();
 }
 void JsonCreator::operator()(
-    const simba::messages::application_layer::OrderBookSnapShot
-        &order_snapshot) {
+    const messages::application_layer::OrderBookSnapShot &order_snapshot) {
   start_main_element("OrderBookSnapShot");
   add_element(order_snapshot.S);
   current_json_string_ += comma;
@@ -133,8 +136,6 @@ void JsonCreator::add_element(const schema::structs::SBEHeader &S) {
   current_json_string_ += add_numeric_record("TemplateId", S.TemplateId);
   current_json_string_ += add_numeric_record("SchemaId", S.SchemaId);
   current_json_string_ += add_numeric_record("Version", S.Version, true);
-  current_json_string_ += add_key("Version");
-  current_json_string_ += add_numeric_value(S.Version, true /*is_last*/);
   current_json_string_ += end_brace;
 }
 
@@ -171,8 +172,10 @@ void JsonCreator::add_element(
   current_json_string_ += add_optional_record("MDEntryPx", entry.MDEntryPx);
   current_json_string_ += add_optional_record("MDEntrySize", entry.MDEntrySize);
   current_json_string_ += add_optional_record("TradeId", entry.TradeId);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>("MDFlags", entry.MDFlags);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>("MDFlags2", entry.MDFlags2);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>(
+      "MDFlags", entry.MDFlags);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>(
+      "MDFlags2", entry.MDFlags2);
   current_json_string_ += add_enum_record("MDEntryType", entry.MDEntryType);
   current_json_string_ += end_brace;
 }

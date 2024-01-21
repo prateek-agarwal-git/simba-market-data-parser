@@ -16,13 +16,13 @@ struct JsonCreator {
   JsonCreator(WriterCallback &&cb);
   void operator()(start_packet);
   void operator()(end_packet);
-  void operator()(const simba::schema::structs::MarketDataPacketHeader &);
-  void operator()(const simba::schema::structs::IncrementalPacketHeader &);
-  void operator()(const simba::messages::application_layer::BestPrices &);
-  void operator()(const simba::messages::application_layer::OrderUpdate &);
-  void operator()(const simba::messages::application_layer::OrderExecution &);
+  void operator()(const schema::structs::MarketDataPacketHeader &);
+  void operator()(const schema::structs::IncrementalPacketHeader &);
+  void operator()(const messages::application_layer::BestPrices &);
+  void operator()(const messages::application_layer::OrderUpdate &);
+  void operator()(const messages::application_layer::OrderExecution &);
   void
-  operator()(const simba::messages::application_layer::OrderBookSnapShot &);
+  operator()(const messages::application_layer::OrderBookSnapShot &);
 
 private:
   void add_element(const schema::structs::SBEHeader &);
@@ -46,7 +46,7 @@ private:
     return add_key(key) + add_numeric_value(optional.value());
   }
   template <typename T>
-  requires simba::schema::types::is_decimal_t<T> std::string
+  requires schema::types::is_decimal_t<T> std::string
   add_optional_record(const std::string &key, T optional) {
     if (!optional.has_value())
       return "";
@@ -54,14 +54,14 @@ private:
   }
 
   template <typename T>
-  requires(!simba::schema::types::is_decimal_t<T>) std::string
+  requires(!schema::types::is_decimal_t<T>) std::string
       add_numeric_record(const std::string &key, T value,
                          bool is_last = false) {
     return add_key(key) + add_numeric_value(value, is_last);
   }
 
   template <typename T>
-  requires simba::schema::types::is_decimal_t<T> std::string
+  requires schema::types::is_decimal_t<T> std::string
   add_numeric_record(const std::string &key, T value, bool is_last = false) {
     return add_key(key) + value.to_string() + (is_last ? "" : comma);
   }
@@ -69,13 +69,13 @@ private:
   template <typename T>
   std::string add_enum_record(const std::string &key, T val,
                               bool is_last = false) {
-    return add_key(key) + schema::enums::to_string(val)+(is_last ? "" : comma);
+    return add_key(key) + double_quote+schema::enums::to_string(val)+double_quote+(is_last ? "" : comma);
   }
 
   template <typename T>
   std::string add_bitmask_record(const std::string &key, uint64_t val,
                                  bool is_last = false) {
-    return add_key(key)+schema::bitmasks::to_string<T>(val)+(is_last ? "" : comma);
+    return add_key(key)+double_quote+schema::bitmasks::to_string<T>(val)+double_quote+(is_last ? "" : comma);
   }
 
   static inline const std::string colon = ": ";
