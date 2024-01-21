@@ -16,7 +16,7 @@ public:
               .SchemaId = 20,
               .Version = 40},
         .MDEntryId = 100,
-        .MDentryPx = {.mantissa = 1234567},
+        .MDEntryPx = {.mantissa = 1234567},
         .MDEntrySize = 25,
         .MDFlags = 0x1,
         .MDFlags2 = 0x1,
@@ -25,10 +25,10 @@ public:
         .MDUpdateAction = simba::schema::enums::MDUpdateAction::New,
         .MDEntryType = simba::schema::enums::MDEntryType::Offer};
         std::string expected_json_output = 
-        R"({"OrderUpdate": {"SBEHeader": {"BlockLength": 10, "TemplateId": 30, "SchemaId": 20, "Version": 40}}})";
+        R"({"OrderUpdate": {"SBEHeader": {"BlockLength": 10, "TemplateId": 30, "SchemaId": 20, "Version": 40}, "MDEntryId": 100, "MDEntryPx": 12.34567}})";
         ;
-//    std::string expected_json_output =
-//        R"({"OrderUpdate": {"SBEHeader":{"BlockLength": 10, "TemplateId": 30, "SchemaId": 20, "Version": 40}, "MDEntryId": 100, "MDEntryPx": 12.34567, "MDFlags":"DAY", "MDFlags2": "Zero", "SecurityId": 84, "RptSeq": 123432, "MDUpdateAction": "New", "MDEntryType": "Offer"}})";
+  //  std::string expected_json_output =
+  //      R"({"OrderUpdate": {"SBEHeader":{"BlockLength": 10, "TemplateId": 30, "SchemaId": 20, "Version": 40}, "MDEntryId": 100, "MDEntryPx": 12.34567, "MDFlags":"DAY", "MDFlags2": "Zero", "SecurityId": 84, "RptSeq": 123432, "MDUpdateAction": "New", "MDEntryType": "Offer"}})";
     std::string ans;
     auto cb = [&ans](const std::string &json) { ans = json; };
     simba::JsonCreator json_creator(std::move(cb));

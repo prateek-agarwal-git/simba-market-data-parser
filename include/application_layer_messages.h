@@ -30,7 +30,7 @@ struct BestPricesEntry {
 };
 struct BestPrices {
   schema::structs::SBEHeader S;
-  schema::structs::RepeatingGroupDimensions NoMDEntries;
+  schema::structs::groupSize NoMDEntries;
   std::vector<BestPricesEntry> Entries;
 };
 
@@ -42,7 +42,7 @@ struct EmptyBook {
 struct OrderUpdate {
   schema::structs::SBEHeader S;
   std::int64_t MDEntryId;
-  schema::types::Decimal5 MDentryPx;
+  schema::types::Decimal5 MDEntryPx;
   std::int64_t MDEntrySize;
   std::uint64_t MDFlags;
   std::uint64_t MDFlags2;
@@ -57,7 +57,7 @@ struct OrderUpdate {
 struct OrderExecution {
   schema::structs::SBEHeader S;
   std::int64_t MDEntryId;
-  schema::types::Decimal5Null MDentryPx;
+  schema::types::Decimal5Null MDEntryPx;
   schema::types::Int64NULL MDEntrySize;
   schema::types::Decimal5 LastPx;
   std::int64_t LastQty;
@@ -87,7 +87,7 @@ struct OrderBookSnapShot {
   std::uint32_t LastMsgSeqNumProcessed;
   std::uint32_t RptSeq;
   std::uint32_t ExchangeTradingSessionId;
-  schema::structs::RepeatingGroupDimensions NoMDEntries;
+  schema::structs::groupSize NoMDEntries;
   std::vector<SnapShotEntry> Entries;
 };
 

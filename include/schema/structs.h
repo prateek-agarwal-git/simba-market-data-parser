@@ -20,7 +20,7 @@ struct SBEHeader {
   std::uint16_t Version;
 } __attribute__((packed));
 
-struct RepeatingGroupDimensions {
+struct groupSize{
   std::uint16_t blockLength;
   std::uint8_t numInGroup;
 } __attribute__((packed));
