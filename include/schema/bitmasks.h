@@ -1,11 +1,12 @@
 #pragma once
 #include <cstdint>
-#include <string_view>
 #include <cstdlib>
+#include <string>
+#include <vector>
 namespace simba::schema::bitmasks {
 
-enum MDFlagsSet : std::uint64_t {
-  DAY = (1 << 0),
+enum class MDFlagsSet : std::uint64_t {
+  DAY = 1,
   IOC = (1 << 1),
   NonQuote = (1 << 2),
   EndOfTransaction = 1 << 12,
@@ -28,7 +29,7 @@ enum MDFlagsSet : std::uint64_t {
   DuringDiscreteAuction = 1ULL << 62
 };
 
-inline std::string_view sv(MDFlagsSet flag) {
+inline std::string to_string(MDFlagsSet flag) {
   switch (flag) {
   case MDFlagsSet::DAY:
     return "DAY";
@@ -42,7 +43,8 @@ inline std::string_view sv(MDFlagsSet flag) {
     return "DueToCrossCancel";
   case MDFlagsSet::SecondLeg:
     return "SecondLeg";
-  case MDFlagsSet::FOK : return "FOK";
+  case MDFlagsSet::FOK:
+    return "FOK";
   case MDFlagsSet::Replace:
     return "Replace";
   case MDFlagsSet::Cancel:
@@ -53,7 +55,7 @@ inline std::string_view sv(MDFlagsSet flag) {
     return "Negotiated";
   case MDFlagsSet::MultiLeg:
     return "Multileg";
-  case MDFlagsSet::CrossTrade :
+  case MDFlagsSet::CrossTrade:
     return "CrossTrade";
   case MDFlagsSet::COD:
     return "COD";
@@ -79,11 +81,56 @@ inline std::string_view sv(MDFlagsSet flag) {
 
 enum MDFlags2Set : std::uint64_t { Zero = 1 };
 
-inline std::string_view sv(MDFlags2Set flag){
-  switch(flag){
-    case MDFlags2Set::Zero: return "Zero";
+inline std::string to_string(MDFlags2Set flag) {
+  switch (flag) {
+  case MDFlags2Set::Zero:
+    return "Zero";
   }
   std::abort();
+}
+
+template <typename T> std::string to_string(uint64_t);
+
+template <> inline std::string to_string<MDFlags2Set>(uint64_t val) {
+  std::vector<MDFlags2Set> v{MDFlags2Set::Zero};
+  for (auto a : v) {
+    if (val & static_cast<uint64_t>(a)) {
+      return to_string(a);
+    }
+  }
+  return "";
+}
+
+template <> inline std::string to_string<MDFlagsSet>(uint64_t val) {
+  std::vector<MDFlagsSet> v{MDFlagsSet::DAY,
+                            MDFlagsSet::IOC,
+                            MDFlagsSet::NonQuote,
+                            MDFlagsSet::EndOfTransaction,
+                            MDFlagsSet::DueToCrossCancel,
+                            MDFlagsSet::SecondLeg,
+                            MDFlagsSet::FOK,
+                            MDFlagsSet::Replace,
+                            MDFlagsSet::Cancel,
+                            MDFlagsSet::MassCancel,
+                            MDFlagsSet::Negotiated,
+                            MDFlagsSet::MultiLeg,
+                            MDFlagsSet::CrossTrade,
+                            MDFlagsSet::COD,
+                            MDFlagsSet::ActiveSide,
+                            MDFlagsSet::PassiveSide,
+                            MDFlagsSet::Synthetic,
+                            MDFlagsSet::RFS,
+                            MDFlagsSet::SyntheticPassive,
+                            MDFlagsSet::BOC,
+                            MDFlagsSet::DuringDiscreteAuction};
+  std::string ans;
+  for (auto a : v) {
+    if (val & static_cast<uint64_t>(a)) {
+      ans += to_string(a) + "|";
+    }
+  }
+  if (!ans.empty()) ans.pop_back();
+  return ans;
 }
 
 } // namespace simba::schema::bitmasks

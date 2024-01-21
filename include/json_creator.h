@@ -69,13 +69,13 @@ private:
   template <typename T>
   std::string add_enum_record(const std::string &key, T val,
                               bool is_last = false) {
-    return add_key(key);
+    return add_key(key) + schema::enums::to_string(val)+(is_last ? "" : comma);
   }
 
   template <typename T>
-  std::string add_bitmask_record(const std::string &key, T val,
+  std::string add_bitmask_record(const std::string &key, uint64_t val,
                                  bool is_last = false) {
-    return add_key(key);
+    return add_key(key)+schema::bitmasks::to_string<T>(val)+(is_last ? "" : comma);
   }
 
   static inline const std::string colon = ": ";

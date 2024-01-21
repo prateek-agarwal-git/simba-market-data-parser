@@ -61,8 +61,8 @@ void JsonCreator::operator()(
       add_numeric_record("MDEntryId", order_update.MDEntryId);
   current_json_string_ +=
       add_numeric_record("MDEntryPx", order_update.MDEntryPx);
-  current_json_string_ += add_bitmask_record("MDFlags", order_update.MDFlags);
-  current_json_string_ += add_bitmask_record("MDFlags2", order_update.MDFlags2);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>("MDFlags", order_update.MDFlags);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>("MDFlags2", order_update.MDFlags2);
   current_json_string_ +=
       add_numeric_record("SecurityId", order_update.SecurityId);
   current_json_string_ += add_numeric_record("RptSeq", order_update.RptSeq);
@@ -91,9 +91,9 @@ void JsonCreator::operator()(
       add_numeric_record("TradeId", order_execution.TradeId);
 
   current_json_string_ +=
-      add_bitmask_record("MDFlags", order_execution.MDFlags);
+      add_bitmask_record<schema::bitmasks::MDFlagsSet>("MDFlags", order_execution.MDFlags);
   current_json_string_ +=
-      add_bitmask_record("MDFlags2", order_execution.MDFlags2);
+      add_bitmask_record<schema::bitmasks::MDFlags2Set>("MDFlags2", order_execution.MDFlags2);
   current_json_string_ +=
       add_numeric_record("SecurityId", order_execution.SecurityId);
 
@@ -171,8 +171,8 @@ void JsonCreator::add_element(
   current_json_string_ += add_optional_record("MDEntryPx", entry.MDEntryPx);
   current_json_string_ += add_optional_record("MDEntrySize", entry.MDEntrySize);
   current_json_string_ += add_optional_record("TradeId", entry.TradeId);
-  current_json_string_ += add_bitmask_record("MDFlags", entry.MDFlags);
-  current_json_string_ += add_bitmask_record("MDFlags2", entry.MDFlags2);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>("MDFlags", entry.MDFlags);
+  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>("MDFlags2", entry.MDFlags2);
   current_json_string_ += add_enum_record("MDEntryType", entry.MDEntryType);
   current_json_string_ += end_brace;
 }

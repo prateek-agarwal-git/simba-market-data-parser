@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <string_view>
+#include <string>
 
 namespace simba::schema::enums {
 enum class MDUpdateAction : std::uint8_t { New = 0, Change = 1, Delete = 2 };
@@ -9,7 +10,7 @@ enum class MDEntryType : char {
   EmptyBook = 'J'
 
 };
-inline std::string_view sv(MDUpdateAction action){
+inline std::string to_string(MDUpdateAction action){
   switch (action){
     case MDUpdateAction::New :return "New";
     case MDUpdateAction::Change:return "Change";
@@ -18,7 +19,7 @@ inline std::string_view sv(MDUpdateAction action){
   std::abort();
 }
 
-inline std::string_view sv(MDEntryType entry){
+inline std::string to_string(MDEntryType entry){
   switch (entry){
     case MDEntryType ::Bid:return "Bid";
     case MDEntryType ::Offer:return "Offer";
