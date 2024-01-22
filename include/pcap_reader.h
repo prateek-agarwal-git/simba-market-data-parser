@@ -4,7 +4,7 @@
 #include <string>
 namespace reader {
 struct PcapReader {
-  using DecoderCb = std::function<void(const std::uint8_t *)>;
+  using DecoderCb = std::function<void(const std::uint8_t *, int payload_length)>;
   PcapReader(DecoderCb &&cb);
   void read_packets(const std::string &file_path);
 

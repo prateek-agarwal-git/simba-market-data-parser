@@ -6,10 +6,10 @@ JsonCreator::JsonCreator(WriterCallback &&cb) : cb_(std::move(cb)) {
   current_json_string_.reserve(2048);
 }
 
-void JsonCreator::operator()(start_packet) {
+void JsonCreator::operator()(tag_structs::start_packet) {
   current_json_string_ += start_brace;
 }
-void JsonCreator::operator()(end_packet) {
+void JsonCreator::operator()(tag_structs::end_packet) {
   // Remove ending comma
   current_json_string_.pop_back();
   current_json_string_.pop_back();

@@ -1,3 +1,4 @@
+#pragma once
 #include "schema/bitmasks.h"
 #include "schema/enums.h"
 #include "schema/structs.h"

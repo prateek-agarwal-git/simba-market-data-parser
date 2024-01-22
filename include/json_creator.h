@@ -1,6 +1,7 @@
 #pragma once
 #include "application_layer_messages.h"
 #include "schema/structs.h"
+#include "tag_structs.h"
 #include <concepts>
 #include <functional>
 #include <sstream>
@@ -8,14 +9,12 @@
 #include <string_view>
 #include <type_traits>
 namespace simba {
-struct start_packet {};
-struct end_packet {};
 struct JsonCreator {
 
   using WriterCallback = std::function<void(const std::string &)>;
   JsonCreator(WriterCallback &&cb);
-  void operator()(start_packet);
-  void operator()(end_packet);
+  void operator()(tag_structs::start_packet);
+  void operator()(tag_structs::end_packet);
   void operator()(const schema::structs::MarketDataPacketHeader &);
   void operator()(const schema::structs::IncrementalPacketHeader &);
   void operator()(const messages::application_layer::BestPrices &);

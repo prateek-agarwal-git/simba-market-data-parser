@@ -1,5 +1,6 @@
 #include "json_creator.h"
 #include "pcap_reader.h"
+#include "protocol_decoder.h"
 #include "schema/structs.h"
 #include <cassert>
 #include <fstream>
@@ -14,6 +15,7 @@ class test_fixture {
 public:
   test_fixture(std::ostream &os) : os_(os) {}
   void run_tests() {
+    decoder_successful_compilation_test();
     packet_reader_num_packets_test();
     //   json_order_update_test();
     //   json_mdp_header_test();
@@ -22,11 +24,16 @@ public:
     //   json_best_prices_test();
   }
 
+  void decoder_successful_compilation_test() {
+    std::string output;
+    auto cb = [&output](const std::string &json) { output = json; };
+    simba::JsonCreator json_creator(std::move(cb));
+    simba::ProtocolDecoder pd(json_creator);
+    reader::PcapReader reader(pd);
+  }
   void packet_reader_num_packets_test() {
     int count{};
-    auto cb = [&count](const std::uint8_t *) {
-      ++count;
-    };
+    auto cb = [&count](const std::uint8_t *, int payload_length) { ++count; };
     reader::PcapReader pcap_reader(std::move(cb));
     pcap_reader.read_packets(current_directory_path +
                              "tests/test_pcaps/order_update.pcap");
@@ -72,9 +79,9 @@ public:
     std::string output;
     auto cb = [&output](const std::string &json) { output = json; };
     simba::JsonCreator json_creator(std::move(cb));
-    json_creator(simba::start_packet{});
+    json_creator(simba::tag_structs::start_packet{});
     json_creator(best_prices);
-    json_creator(simba::end_packet{});
+    json_creator(simba::tag_structs::end_packet{});
     std::cout << output << std::endl;
     assert_true("json_best_prices_test", output == expected_json_output);
   }
@@ -104,9 +111,9 @@ public:
     std::string output;
     auto cb = [&output](const std::string &json) { output = json; };
     simba::JsonCreator json_creator(std::move(cb));
-    json_creator(simba::start_packet{});
+    json_creator(simba::tag_structs::start_packet{});
     json_creator(order_execution);
-    json_creator(simba::end_packet{});
+    json_creator(simba::tag_structs::end_packet{});
     assert_true("json_order_execution_test", output == expected_json_output);
   }
   void json_incremental_header_test() {
@@ -120,9 +127,9 @@ public:
     std::string output;
     auto cb = [&output](const std::string &json) { output = json; };
     simba::JsonCreator json_creator(std::move(cb));
-    json_creator(simba::start_packet{});
+    json_creator(simba::tag_structs::start_packet{});
     json_creator(incremental_header);
-    json_creator(simba::end_packet{});
+    json_creator(simba::tag_structs::end_packet{});
     assert_true("json_incremental_header_test", output == expected_json_output);
   }
   void json_mdp_header_test() {
@@ -136,9 +143,9 @@ public:
     std::string output;
     auto cb = [&output](const std::string &json) { output = json; };
     simba::JsonCreator json_creator(std::move(cb));
-    json_creator(simba::start_packet{});
+    json_creator(simba::tag_structs::start_packet{});
     json_creator(mdp_header);
-    json_creator(simba::end_packet{});
+    json_creator(simba::tag_structs::end_packet{});
 
     assert_true("json_mdp_header_test", output == expected_json_output);
   }
@@ -162,9 +169,9 @@ public:
     std::string ans;
     auto cb = [&ans](const std::string &json) { ans = json; };
     simba::JsonCreator json_creator(std::move(cb));
-    json_creator(simba::start_packet{});
+    json_creator(simba::tag_structs::start_packet{});
     json_creator(order_update);
-    json_creator(simba::end_packet{});
+    json_creator(simba::tag_structs::end_packet{});
     assert_true("json_order_update_test", ans == expected_json_output);
   }
 
