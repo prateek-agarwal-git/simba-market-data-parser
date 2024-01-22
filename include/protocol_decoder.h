@@ -157,13 +157,12 @@ inline size_t ProtocolDecoder<OutputFunctor>::process_order_execution(
       get_value<decltype(OrderExecution::MDFlags)>(buffer);
   order_execution.MDFlags2 =
       get_value<decltype(OrderExecution::MDFlags2)>(buffer);
-  order_execution.SecurityId=
+  order_execution.SecurityId =
       get_value<decltype(OrderExecution::SecurityId)>(buffer);
-  order_execution.RptSeq=
-      get_value<decltype(OrderExecution::RptSeq)>(buffer);
-  order_execution.MDUpdateAction=
+  order_execution.RptSeq = get_value<decltype(OrderExecution::RptSeq)>(buffer);
+  order_execution.MDUpdateAction =
       get_value<decltype(OrderExecution::MDUpdateAction)>(buffer);
-  order_execution.MDEntryType=
+  order_execution.MDEntryType =
       get_value<decltype(OrderExecution::MDEntryType)>(buffer);
 
   output_(order_execution);
@@ -174,6 +173,29 @@ inline size_t ProtocolDecoder<OutputFunctor>::process_order_execution(
 template <typename OutputFunctor>
 inline size_t ProtocolDecoder<OutputFunctor>::process_best_prices(
     const std::uint8_t *buffer) {
-  return {};
+
+  using namespace messages::application_layer;
+  BestPrices best_prices{
+      .S = get_value<decltype(BestPrices::S)>(buffer),
+      .NoMDEntries = get_value<decltype(BestPrices::NoMDEntries)>(buffer)};
+  auto &entries = best_prices.Entries;
+  entries.resize(best_prices.NoMDEntries.numInGroup, {});
+  //TODO handle this magic constant
+  assert(best_prices.NoMDEntries.blockLength  ==36);
+  for (auto& entry: entries){
+
+  //schema::types::Decimal5Null MktBidPx;
+  //schema::types::Decimal5Null MktOfferPx;
+  //schema::types::Int64NULL MktBidSize;
+  //schema::types::Int64NULL MktOfferSize;
+  //std::int32_t SecurityId;
+  }
+
+  output_(best_prices);
+  output_(tag_structs::end_packet{});
+  size_t total_bytes_processed =
+      sizeof(BestPrices::NoMDEntries) + sizeof(BestPrices::S) +
+      best_prices.NoMDEntries.blockLength * best_prices.NoMDEntries.numInGroup;
+  return total_bytes_processed;
 }
 } // namespace simba
