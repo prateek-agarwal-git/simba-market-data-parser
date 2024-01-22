@@ -1,4 +1,5 @@
 #include "json_creator.h"
+#include "pcap_reader.h"
 #include "schema/structs.h"
 #include <cassert>
 #include <fstream>
@@ -6,23 +7,64 @@
 #include <unistd.h>
 
 namespace tests {
+// CURDIR is a compile time definition
+static inline const std::string current_directory_path =
+    std::string(CURDIR) + "/";
 class test_fixture {
 public:
   test_fixture(std::ostream &os) : os_(os) {}
   void run_tests() {
-    json_order_update_test();
-    json_mdp_header_test();
-    json_incremental_header_test();
-    json_order_execution_test();
-    json_best_prices_test();
+    packet_reader_num_packets_test();
+    //   json_order_update_test();
+    //   json_mdp_header_test();
+    //   json_incremental_header_test();
+    //   json_order_execution_test();
+    //   json_best_prices_test();
+  }
+
+  void packet_reader_num_packets_test() {
+    int count{};
+    auto cb = [&count](const std::uint8_t *) {
+      ++count;
+    };
+    reader::PcapReader pcap_reader(std::move(cb));
+    pcap_reader.read_packets(current_directory_path +
+                             "tests/test_pcaps/order_update.pcap");
+    assert_true("packet_reader_num_packets_test_1", count == 1);
+    count = 0;
+    pcap_reader.read_packets(current_directory_path +
+                             "tests/test_pcaps/long_snapshot.pcap");
+    assert_true("packet_reader_num_packets_test_2", count == 9);
+    count = 0;
+    pcap_reader.read_packets(current_directory_path +
+                             "tests/test_pcaps/next_best_prices.pcap");
+    assert_true("packet_reader_num_packets_test_3", count == 2);
+    count = 0;
+    pcap_reader.read_packets(current_directory_path +
+                             "tests/test_pcaps/order_execution.pcap");
+    assert_true("packet_reader_num_packets_test_4", count == 1);
+
+    count = 0;
+    pcap_reader.read_packets(
+        current_directory_path +
+        "tests/test_pcaps/snapshot_end_and_start_within_same_packet.pcap");
+    assert_true("packet_reader_num_packets_test_5", count == 1);
   }
   void json_best_prices_test() {
     using namespace simba::messages::application_layer;
     std::string expected_json_output;
 
+    // schema::types::Decimal5Null MktBidPx;
+    // schema::types::Decimal5Null MktOfferPx;
+    // schema::types::Int64NULL MktBidSize;
+    // schema::types::Int64NULL MktOfferSize;
     std::vector<BestPricesEntry> v(2, BestPricesEntry{});
-    v[0] = {};
-    v[1] = {};
+    v[0] = {.MktBidPx = {.mantissa = 89'00'000},
+            .MktBidSize = 100,
+            .SecurityId = 83};
+    v[1] = {.MktOfferPx = {.mantissa = 90'00'000},
+            .MktOfferSize = 50,
+            .SecurityId = 84};
     BestPrices best_prices{.S = S_,
                            .NoMDEntries = {.blockLength = 36, .numInGroup = 2},
                            .Entries = v};

@@ -52,17 +52,20 @@ private:
   }
 
   template <typename T>
-  std::string add_optional_record(const std::string &key, T optional) {
+  requires(!schema::types::is_decimal_t<T>) std::string
+      add_optional_record(const std::string &key, T optional,
+                          bool is_last = false) {
     if (!optional.has_value())
       return "";
-    return add_key(key) + add_numeric_value(optional.value());
+    return add_key(key) + add_numeric_value(optional.value(), is_last);
   }
   template <typename T>
   requires schema::types::is_decimal_t<T> std::string
-  add_optional_record(const std::string &key, T optional) {
+  add_optional_record(const std::string &key, T optional,
+                      bool is_last = false) {
     if (!optional.has_value())
       return "";
-    return add_key(key) + optional.to_string();
+    return add_key(key) + optional.to_string() + (is_last ? "" : comma);
   }
 
   template <typename T>
