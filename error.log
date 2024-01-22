@@ -1,0 +1,25 @@
+g++ -g -std=c++20  -Wall -I./include/  src/main.cpp -o build/main
+g++ -g -std=c++20  -Wall -I./include/ -c src/json_creator.cpp -o build/json_creator.o
+g++ -g -std=c++20  -Wall -I./include/  -c  src/pcap_reader.cpp  -o build/pcap_reader.o 
+g++ -g -std=c++20  -Wall -I./include/  tests/tests.cpp build/json_creator.o build/pcap_reader.o -o build/tests -lpcap -DCURDIR=\"/home/prateek/Code/simba-market-data-parser\"
+In file included from /usr/include/c++/11/cassert:44,
+                 from ./include/protocol_decoder.h:6,
+                 from tests/tests.cpp:3:
+./include/protocol_decoder.h: In instantiation of ‘void simba::ProtocolDecoder<OutputFunctor>::decode_snapshot_packet(const uint8_t*, int) [with OutputFunctor = simba::JsonCreator; uint8_t = unsigned char]’:
+./include/protocol_decoder.h:55:5:   required from ‘void simba::ProtocolDecoder<OutputFunctor>::operator()(const uint8_t*, int) [with OutputFunctor = simba::JsonCreator; uint8_t = unsigned char]’
+/usr/include/c++/11/bits/invoke.h:61:36:   required from ‘constexpr _Res std::__invoke_impl(std::__invoke_other, _Fn&&, _Args&& ...) [with _Res = void; _Fn = simba::ProtocolDecoder<simba::JsonCreator>&; _Args = {const unsigned char*, int}]’
+/usr/include/c++/11/bits/invoke.h:111:28:   required from ‘constexpr std::enable_if_t<is_invocable_r_v<_Res, _Callable, _Args ...>, _Res> std::__invoke_r(_Callable&&, _Args&& ...) [with _Res = void; _Callable = simba::ProtocolDecoder<simba::JsonCreator>&; _Args = {const unsigned char*, int}; std::enable_if_t<is_invocable_r_v<_Res, _Callable, _Args ...>, _Res> = void]’
+/usr/include/c++/11/bits/std_function.h:290:30:   required from ‘static _Res std::_Function_handler<_Res(_ArgTypes ...), _Functor>::_M_invoke(const std::_Any_data&, _ArgTypes&& ...) [with _Res = void; _Functor = simba::ProtocolDecoder<simba::JsonCreator>; _ArgTypes = {const unsigned char*, int}]’
+/usr/include/c++/11/bits/std_function.h:451:21:   required from ‘std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Functor = simba::ProtocolDecoder<simba::JsonCreator>&; _Constraints = void; _Res = void; _ArgTypes = {const unsigned char*, int}]’
+tests/tests.cpp:32:33:   required from here
+./include/protocol_decoder.h:101:26: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+  101 |   assert(remaining_bytes == sizeof(OrderBookSnapShot::NoMDEntries) +
+      |          ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  102 |                                 sizeof(OrderBookSnapShot::S) +
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  103 |                                 order_book_snapshot.S.BlockLength +
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  104 |                                 order_book_snapshot.NoMDEntries.blockLength *
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  105 |                                     order_book_snapshot.NoMDEntries.numInGroup);
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

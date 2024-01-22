@@ -14,13 +14,21 @@ template <typename OutputFunctor> struct ProtocolDecoder {
   void operator()(const std::uint8_t *payload, int payload_length);
 
 private:
-  template <typename T> void get_value(const uint8_t *&buffer) {
+  template <typename T> T get_value(const uint8_t *&buffer) {
     T value = *reinterpret_cast<const T *>(buffer);
     buffer += sizeof(T);
     return value;
   }
+
+  void check_null_and_update(const uint8_t *&buffer,
+                             std::optional<int64_t> &opt) {
+    int64_t val = get_value<int64_t>(buffer);
+    if (val != schema::types::NullValues::Int64) {
+      opt = val;
+    }
+  }
   void decode_incremental_packet(const uint8_t *buffer, int remaining_bytes);
-  void decode_snapshot_packet(const uint8_t *buffer, int remaining_bytes);
+  void decode_snapshot_packet(const uint8_t *buffer, std::size_t remaining_bytes);
 
   std::size_t process_best_prices(const uint8_t *buffer);
   std::size_t process_order_update(const uint8_t *buffer);
@@ -54,8 +62,49 @@ ProtocolDecoder<OutputFunctor>::operator()(const std::uint8_t *packet,
 
 template <typename OutputFunctor>
 inline void
-ProtocolDecoder<OutputFunctor>::decode_snapshot_packet(const uint8_t *packet,
-                                                       int remaining_bytes) {}
+ProtocolDecoder<OutputFunctor>::decode_snapshot_packet(const uint8_t *buffer,
+                                                       size_t remaining_bytes) {
+
+  auto *sbe_header =
+      reinterpret_cast<const schema::structs::SBEHeader *>(buffer);
+  using namespace simba::messages::application_layer;
+  assert(static_cast<MessageTypes>(sbe_header->TemplateId) ==
+         MessageTypes::OrderBookSnapShot);
+  OrderBookSnapShot order_book_snapshot{
+      .S = get_value<decltype(OrderBookSnapShot::S)>(buffer),
+      .SecurityId = get_value<decltype(OrderBookSnapShot::SecurityId)>(buffer),
+      .LastMsgSeqNumProcessed =
+          get_value<decltype(OrderBookSnapShot::LastMsgSeqNumProcessed)>(
+              buffer),
+      .RptSeq = get_value<decltype(OrderBookSnapShot::RptSeq)>(buffer),
+      .ExchangeTradingSessionId =
+          get_value<decltype(OrderBookSnapShot::ExchangeTradingSessionId)>(
+              buffer),
+      .NoMDEntries =
+          get_value<decltype(OrderBookSnapShot::NoMDEntries)>(buffer)};
+
+  auto &entries = order_book_snapshot.Entries;
+  entries.resize(order_book_snapshot.NoMDEntries.numInGroup, {});
+  for (auto &entry : entries) {
+    check_null_and_update(buffer, entry.MDEntryId);
+    entry.TransactTime = get_value<decltype(entry.TransactTime)>(buffer);
+    check_null_and_update(buffer, entry.MDEntryPx.mantissa);
+    check_null_and_update(buffer, entry.MDEntrySize);
+    check_null_and_update(buffer, entry.TradeId);
+    entry.MDFlags = get_value<decltype(entry.MDFlags)>(buffer);
+    entry.MDFlags2 = get_value<decltype(entry.MDFlags2)>(buffer);
+    entry.MDEntryType = get_value<decltype(entry.MDEntryType)>(buffer);
+  }
+
+  output_(order_book_snapshot);
+  output_(tag_structs::end_packet{});
+  //assert(remaining_bytes == sizeof(OrderBookSnapShot::NoMDEntries) +
+  //                              sizeof(OrderBookSnapShot::S) +
+  //                              order_book_snapshot.S.BlockLength +
+  //                              order_book_snapshot.NoMDEntries.blockLength *
+  //                                  order_book_snapshot.NoMDEntries.numInGroup);
+  return;
+}
 
 template <typename OutputFunctor>
 inline void ProtocolDecoder<OutputFunctor>::decode_incremental_packet(
@@ -72,16 +121,16 @@ inline void ProtocolDecoder<OutputFunctor>::decode_incremental_packet(
     switch (static_cast<MessageTypes>(sbe_header->TemplateId)) {
     case MessageTypes::BestPrices: {
       assert(sbe_header->BlockLength == 0);
-      //      auto delta = process_best_prices(buffer + bytes_processed);
-      //      bytes_processed += delta;
+      auto delta = process_best_prices(buffer + bytes_processed);
+      bytes_processed += delta;
     } break;
     case MessageTypes::OrderUpdate: {
-      //      auto delta = process_order_update(buffer + bytes_processed);
-      //      bytes_processed += delta;
+      auto delta = process_order_update(buffer + bytes_processed);
+      bytes_processed += delta;
     } break;
     case MessageTypes::OrderExecution: {
-      //     auto delta = process_order_execution(buffer + bytes_processed);
-      //     bytes_processed += delta;
+      auto delta = process_order_execution(buffer + bytes_processed);
+      bytes_processed += delta;
     } break;
     default: {
       // do not parse it, yet increment the processed bytes
@@ -113,23 +162,8 @@ inline size_t ProtocolDecoder<OutputFunctor>::process_order_update(
   };
   output_(order_update);
   output_(tag_structs::end_packet{});
-  return sizeof(order_update);
+  return sizeof(order_update.S) + order_update.S.BlockLength;
 }
-// struct OrderExecution {
-//   schema::structs::SBEHeader S;
-//   std::int64_t MDEntryId;
-//   schema::types::Decimal5Null MDEntryPx;
-//   schema::types::Int64NULL MDEntrySize;
-//   schema::types::Decimal5 LastPx;
-//   std::int64_t LastQty;
-//   std::int64_t TradeId;
-//   std::uint64_t MDFlags;
-//   std::uint64_t MDFlags2;
-//   std::int32_t SecurityId;
-//   std::uint32_t RptSeq;
-//   schema::enums::MDUpdateAction MDUpdateAction;
-//   schema::enums::MDEntryType MDEntryType;
-// };
 
 template <typename OutputFunctor>
 inline size_t ProtocolDecoder<OutputFunctor>::process_order_execution(
@@ -139,14 +173,9 @@ inline size_t ProtocolDecoder<OutputFunctor>::process_order_execution(
       .S = get_value<decltype(OrderExecution::S)>(buffer),
       .MDEntryId = get_value<decltype(OrderExecution::MDEntryId)>(buffer),
   };
-  int64_t mantissa = get_value<int64_t>(buffer);
-  if (mantissa != schema::types::NullValues::Int64) {
-    order_execution.MDEntryPx.mantissa = mantissa;
-  }
-  int64_t MDEntrySize = get_value<int64_t>(buffer);
-  if (MDEntrySize != schema::types::NullValues::Int64) {
-    order_execution.MDEntrySize = MDEntrySize;
-  }
+  check_null_and_update(buffer, order_execution.MDEntryPx.mantissa);
+  check_null_and_update(buffer, order_execution.MDEntrySize);
+
   order_execution.LastPx.mantissa =
       get_value<decltype(schema::types::Decimal5::mantissa)>(buffer);
   order_execution.LastQty =
@@ -167,7 +196,7 @@ inline size_t ProtocolDecoder<OutputFunctor>::process_order_execution(
 
   output_(order_execution);
   output_(tag_structs::end_packet{});
-  return sizeof(order_execution);
+  return sizeof(order_execution.S) + order_execution.S.BlockLength;
 }
 
 template <typename OutputFunctor>
@@ -180,15 +209,14 @@ inline size_t ProtocolDecoder<OutputFunctor>::process_best_prices(
       .NoMDEntries = get_value<decltype(BestPrices::NoMDEntries)>(buffer)};
   auto &entries = best_prices.Entries;
   entries.resize(best_prices.NoMDEntries.numInGroup, {});
-  //TODO handle this magic constant
-  assert(best_prices.NoMDEntries.blockLength  ==36);
-  for (auto& entry: entries){
-
-  //schema::types::Decimal5Null MktBidPx;
-  //schema::types::Decimal5Null MktOfferPx;
-  //schema::types::Int64NULL MktBidSize;
-  //schema::types::Int64NULL MktOfferSize;
-  //std::int32_t SecurityId;
+  // TODO handle this magic constant
+  assert(best_prices.NoMDEntries.blockLength == 36);
+  for (auto &entry : entries) {
+    check_null_and_update(buffer, entry.MktBidPx.mantissa);
+    check_null_and_update(buffer, entry.MktOfferPx.mantissa);
+    check_null_and_update(buffer, entry.MktBidSize);
+    check_null_and_update(buffer, entry.MktOfferSize);
+    entry.SecurityId = get_value<decltype(entry.SecurityId)>(buffer);
   }
 
   output_(best_prices);
