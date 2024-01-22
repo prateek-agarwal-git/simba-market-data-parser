@@ -105,10 +105,11 @@ inline size_t ProtocolDecoder<OutputFunctor>::process_order_update(
       .MDEntrySize = get_value<decltype(OrderUpdate::MDEntrySize)>(buffer),
       .MDFlags = get_value<decltype(OrderUpdate::MDFlags)>(buffer),
       .MDFlags2 = get_value<decltype(OrderUpdate::MDFlags2)>(buffer),
-      .SecurityId= get_value<decltype(OrderUpdate::SecurityId)>(buffer),
-      .RptSeq =  get_value<decltype(OrderUpdate::RptSeq)>(buffer),
-      .MDUpdateAction = get_value<decltype(OrderUpdate::MDUpdateAction)>(buffer),
-      .MDEntryType= get_value<decltype(OrderUpdate::MDEntryType)>(buffer),
+      .SecurityId = get_value<decltype(OrderUpdate::SecurityId)>(buffer),
+      .RptSeq = get_value<decltype(OrderUpdate::RptSeq)>(buffer),
+      .MDUpdateAction =
+          get_value<decltype(OrderUpdate::MDUpdateAction)>(buffer),
+      .MDEntryType = get_value<decltype(OrderUpdate::MDEntryType)>(buffer),
   };
   output_(order_update);
   output_(tag_structs::end_packet{});
@@ -133,9 +134,41 @@ inline size_t ProtocolDecoder<OutputFunctor>::process_order_update(
 template <typename OutputFunctor>
 inline size_t ProtocolDecoder<OutputFunctor>::process_order_execution(
     const std::uint8_t *buffer) {
-  messages::application_layer::OrderExecution order_execution{
-      .S = *(reinterpret_cast<const schema::structs::SBEHeader *>(buffer))};
-  return {};
+  using namespace messages::application_layer;
+  OrderExecution order_execution{
+      .S = get_value<decltype(OrderExecution::S)>(buffer),
+      .MDEntryId = get_value<decltype(OrderExecution::MDEntryId)>(buffer),
+  };
+  int64_t mantissa = get_value<int64_t>(buffer);
+  if (mantissa != schema::types::NullValues::Int64) {
+    order_execution.MDEntryPx.mantissa = mantissa;
+  }
+  int64_t MDEntrySize = get_value<int64_t>(buffer);
+  if (MDEntrySize != schema::types::NullValues::Int64) {
+    order_execution.MDEntrySize = MDEntrySize;
+  }
+  order_execution.LastPx.mantissa =
+      get_value<decltype(schema::types::Decimal5::mantissa)>(buffer);
+  order_execution.LastQty =
+      get_value<decltype(OrderExecution::LastQty)>(buffer);
+  order_execution.TradeId =
+      get_value<decltype(OrderExecution::TradeId)>(buffer);
+  order_execution.MDFlags =
+      get_value<decltype(OrderExecution::MDFlags)>(buffer);
+  order_execution.MDFlags2 =
+      get_value<decltype(OrderExecution::MDFlags2)>(buffer);
+  order_execution.SecurityId=
+      get_value<decltype(OrderExecution::SecurityId)>(buffer);
+  order_execution.RptSeq=
+      get_value<decltype(OrderExecution::RptSeq)>(buffer);
+  order_execution.MDUpdateAction=
+      get_value<decltype(OrderExecution::MDUpdateAction)>(buffer);
+  order_execution.MDEntryType=
+      get_value<decltype(OrderExecution::MDEntryType)>(buffer);
+
+  output_(order_execution);
+  output_(tag_structs::end_packet{});
+  return sizeof(order_execution);
 }
 
 template <typename OutputFunctor>
