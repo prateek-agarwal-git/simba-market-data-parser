@@ -14,6 +14,11 @@ template <typename OutputFunctor> struct ProtocolDecoder {
   void operator()(const std::uint8_t *payload, int payload_length);
 
 private:
+  template <typename T> void get_value(const uint8_t *&buffer) {
+    T value = *reinterpret_cast<const T *>(buffer);
+    buffer += sizeof(T);
+    return value;
+  }
   void decode_incremental_packet(const uint8_t *buffer, int remaining_bytes);
   void decode_snapshot_packet(const uint8_t *buffer, int remaining_bytes);
 
@@ -88,20 +93,54 @@ inline void ProtocolDecoder<OutputFunctor>::decode_incremental_packet(
 }
 
 template <typename OutputFunctor>
-inline size_t  
-ProtocolDecoder<OutputFunctor>::process_order_update(const std::uint8_t *buffer){
-    return {};
+inline size_t ProtocolDecoder<OutputFunctor>::process_order_update(
+    const std::uint8_t *buffer) {
+  using namespace messages::application_layer;
+  OrderUpdate order_update{
+      .S = get_value<decltype(OrderUpdate::S)>(buffer),
+      .MDEntryId = get_value<decltype(OrderUpdate::MDEntryId)>(buffer),
+      .MDEntryPx = {.mantissa =
+                        get_value<decltype(schema::types::Decimal5::mantissa)>(
+                            buffer)},
+      .MDEntrySize = get_value<decltype(OrderUpdate::MDEntrySize)>(buffer),
+      .MDFlags = get_value<decltype(OrderUpdate::MDFlags)>(buffer),
+      .MDFlags2 = get_value<decltype(OrderUpdate::MDFlags2)>(buffer),
+      .SecurityId= get_value<decltype(OrderUpdate::SecurityId)>(buffer),
+      .RptSeq =  get_value<decltype(OrderUpdate::RptSeq)>(buffer),
+      .MDUpdateAction = get_value<decltype(OrderUpdate::MDUpdateAction)>(buffer),
+      .MDEntryType= get_value<decltype(OrderUpdate::MDEntryType)>(buffer),
+  };
+  output_(order_update);
+  output_(tag_structs::end_packet{});
+  return sizeof(order_update);
+}
+// struct OrderExecution {
+//   schema::structs::SBEHeader S;
+//   std::int64_t MDEntryId;
+//   schema::types::Decimal5Null MDEntryPx;
+//   schema::types::Int64NULL MDEntrySize;
+//   schema::types::Decimal5 LastPx;
+//   std::int64_t LastQty;
+//   std::int64_t TradeId;
+//   std::uint64_t MDFlags;
+//   std::uint64_t MDFlags2;
+//   std::int32_t SecurityId;
+//   std::uint32_t RptSeq;
+//   schema::enums::MDUpdateAction MDUpdateAction;
+//   schema::enums::MDEntryType MDEntryType;
+// };
+
+template <typename OutputFunctor>
+inline size_t ProtocolDecoder<OutputFunctor>::process_order_execution(
+    const std::uint8_t *buffer) {
+  messages::application_layer::OrderExecution order_execution{
+      .S = *(reinterpret_cast<const schema::structs::SBEHeader *>(buffer))};
+  return {};
 }
 
 template <typename OutputFunctor>
-inline size_t  
-ProtocolDecoder<OutputFunctor>::process_order_execution(const std::uint8_t *buffer){
-    return {};
-}
-
-template <typename OutputFunctor>
-inline size_t  
-ProtocolDecoder<OutputFunctor>::process_best_prices(const std::uint8_t *buffer){
-    return {};
+inline size_t ProtocolDecoder<OutputFunctor>::process_best_prices(
+    const std::uint8_t *buffer) {
+  return {};
 }
 } // namespace simba
