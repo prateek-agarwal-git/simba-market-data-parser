@@ -4,6 +4,7 @@
 #include "schema/structs.h"
 #include "schema/types.h"
 #include <cstdint>
+#include <iostream>
 #include <vector>
 
 namespace simba::messages::application_layer {
@@ -22,7 +23,8 @@ struct BestPricesEntry {
   std::int32_t SecurityId;
   bool operator==(const BestPricesEntry &other) const {
     return MktBidPx == other.MktBidPx && MktOfferPx == other.MktOfferPx &&
-           MktBidSize == other.MktBidSize && MktOfferSize == other.MktOfferSize&&SecurityId == other.SecurityId;
+           MktBidSize == other.MktBidSize &&
+           MktOfferSize == other.MktOfferSize && SecurityId == other.SecurityId;
   }
 };
 struct BestPrices {
@@ -113,5 +115,31 @@ struct OrderBookSnapShot {
            NoMDEntries == other.NoMDEntries && Entries == other.Entries;
   }
 };
+inline std::ostream &operator<<(std::ostream &os, const BestPricesEntry &bpe) {
+  os<< "BestPricesEntry: ";
+  if (bpe.MktBidPx.has_value()) {
+    os << "MktBidPx=" << bpe.MktBidPx.to_string();
+  }
+  if (bpe.MktOfferPx.has_value()) {
+    os << "MktOfferPx=" << bpe.MktOfferPx.to_string();
+  }
+
+  if (bpe.MktBidSize.has_value())
+    os << "MktBidSize=" << *bpe.MktBidSize;
+  if (bpe.MktOfferSize.has_value()) {
+    os << "MktOfferSize=" << *bpe.MktOfferSize;
+  }
+  os<< "SecurityId=" << bpe.SecurityId;
+  return os;
+}
+
+
+inline std::ostream & operator<<( std::ostream& os,const BestPrices & bp ){
+  os<<"BestPrices: " <<  bp.S<<"," <<bp.NoMDEntries;
+  for(const auto& entry: bp.Entries){
+    os<<entry;
+  }
+  return os;
+}
 
 } // namespace simba::messages::application_layer

@@ -46,8 +46,7 @@ struct groupSize {
 inline std::ostream &operator<<(std::ostream &os,
                                 const MarketDataPacketHeader &mdp) {
   os << "MDPHeader:MsgSeqNum=" << mdp.MsgSeqNum << ",MsgSize=" << mdp.MsgSize
-     << ",MsgFlags=" << mdp.MsgFlags << ",SendingTime=" << mdp.SendingTime
-     << std::endl;
+     << ",MsgFlags=" << mdp.MsgFlags << ",SendingTime=" << mdp.SendingTime;
   return os;
 }
 
@@ -59,12 +58,14 @@ inline std::ostream &operator<<(std::ostream &os,
 }
 
 inline std::ostream &operator<<(std::ostream &os, const SBEHeader &sbe) {
-  os << "SBEHeader:BlockLength=" << sbe.BlockLength << ",TemplateId=" << sbe.TemplateId
-     << ",SchemaId=" << sbe.SchemaId << ",Version=" << sbe.Version;
+  os << "SBEHeader:BlockLength=" << sbe.BlockLength
+     << ",TemplateId=" << sbe.TemplateId << ",SchemaId=" << sbe.SchemaId
+     << ",Version=" << sbe.Version;
   return os;
 }
 inline std::ostream &operator<<(std::ostream &os, const groupSize &gs) {
-  os << "groupSize:blockLength=" << gs.blockLength << ",numInGroup=" << gs.numInGroup;
+  os << "groupSize:blockLength=" << gs.blockLength
+     << ",numInGroup=" << int(gs.numInGroup);
   return os;
 }
 } // namespace simba::schema::structs

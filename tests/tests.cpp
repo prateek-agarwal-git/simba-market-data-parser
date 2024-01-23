@@ -24,15 +24,15 @@ int main() {
 namespace tests {
 
 void test_fixture::run_tests() {
-  // run_packet_reader_tests();
+  run_packet_reader_tests();
   run_protocol_decoder_tests();
-  // run_json_creator_tests();
+  run_json_creator_tests();
 }
 
 void test_fixture::run_protocol_decoder_tests() {
   decode_order_update_test();
   decode_order_execution_test();
-  //  decode_best_prices_test();
+  decode_best_prices_test();
   //  decode_order_book_snapshot_test();
 }
 
@@ -90,7 +90,7 @@ void test_fixture::decode_order_execution_test() {
   using namespace simba::schema::bitmasks;
   DecoderOutputFunctor output_fn;
   simba::ProtocolDecoder pd(output_fn);
-  uint8_t buffer[110]{};
+  uint8_t buffer[1024]{}; // kept larger than required as an another check
   uint8_t *tmp = buffer;
   MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29315345,
                                       .MsgSize = 110,
@@ -100,33 +100,33 @@ void test_fixture::decode_order_execution_test() {
                                        .ExchangeTradingSessionId = 6902};
   SBEHeader expected_S{
       .BlockLength = 74, .TemplateId = 16, .SchemaId = 19780, .Version = 4};
-  update_buffer(tmp, &expected_mdp);
-  update_buffer(tmp, &expected_inc);
-  update_buffer(tmp, &expected_S);
+  update_buffer(tmp, expected_mdp);
+  update_buffer(tmp, expected_inc);
+  update_buffer(tmp, expected_S);
   std::int64_t MDEntryId = 2012575727345762677;
-  update_buffer(tmp, &MDEntryId);
+  update_buffer(tmp, MDEntryId);
   std::int64_t MDEntryPx = std::numeric_limits<std::int64_t>::max();
-  update_buffer(tmp, &MDEntryPx);
+  update_buffer(tmp, MDEntryPx);
   std::int64_t MDEntrySize = 2;
-  update_buffer(tmp, &MDEntrySize);
+  update_buffer(tmp, MDEntrySize);
   std::int64_t LastPx_mantissa = 335200;
-  update_buffer(tmp, &LastPx_mantissa);
+  update_buffer(tmp, LastPx_mantissa);
   std::int64_t LastQty = 200;
-  update_buffer(tmp, &LastQty);
+  update_buffer(tmp, LastQty);
   std::int64_t TradeId = 900;
-  update_buffer(tmp, &TradeId);
+  update_buffer(tmp, TradeId);
   std::uint64_t MDFlags = 4398046515201;
-  update_buffer(tmp, &MDFlags);
+  update_buffer(tmp, MDFlags);
   std::uint64_t MDFlags2 = 0;
-  update_buffer(tmp, &MDFlags2);
+  update_buffer(tmp, MDFlags2);
   std::int32_t SecurityId = 82;
-  update_buffer(tmp, &SecurityId);
+  update_buffer(tmp, SecurityId);
   std::uint32_t RptSeq = 508234;
-  update_buffer(tmp, &RptSeq);
+  update_buffer(tmp, RptSeq);
   std::uint8_t md_update_action = 1; // change
-  update_buffer(tmp, &md_update_action);
-  char md_entry_type = '0';          // bid
-  update_buffer(tmp, &md_entry_type);
+  update_buffer(tmp, md_update_action);
+  char md_entry_type = '0'; // bid
+  update_buffer(tmp, md_entry_type);
   OrderExecution expected_order_exec{
       .S = {.BlockLength = 74,
             .TemplateId = 16,
@@ -144,16 +144,71 @@ void test_fixture::decode_order_execution_test() {
       .MDUpdateAction = static_cast<MDUpdateAction>(md_update_action),
       .MDEntryType = static_cast<MDEntryType>(md_entry_type)};
   pd(buffer, 110);
-  auto actual_output = output_fn.order_execution(); 
+  auto actual_output = output_fn.order_execution();
   assert_true("decode_order_execution_test",
-               expected_order_exec ==actual_output&& expected_mdp == output_fn.mdp_header()&& expected_inc == output_fn.inc_header());
+              expected_order_exec == actual_output &&
+                  expected_mdp == output_fn.mdp_header() &&
+                  expected_inc == output_fn.inc_header());
 }
 void test_fixture::decode_best_prices_test() {
   using namespace simba::messages::application_layer;
   using namespace simba::schema::structs;
   using namespace simba::schema::enums;
-  DecoderOutputFunctor output_fn_;
-  simba::ProtocolDecoder pd(output_fn_);
+  MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29238096,
+                                      .MsgSize = 111,
+                                      .MsgFlags = 8,
+                                      .SendingTime = 1696935901001191258};
+  IncrementalPacketHeader expected_inc{.TransactTime = 1696935901001142462,
+                                       .ExchangeTradingSessionId = 6902};
+  BestPrices expected_best_prices{
+      .S = {.BlockLength = 0,
+            .TemplateId = 14,
+            .SchemaId = 19780,
+            .Version = 4},
+      .NoMDEntries = {.blockLength = 36, .numInGroup = 2},
+      .Entries = {{.MktBidPx = {.mantissa = 335700},
+                   .MktOfferPx = {.mantissa = 336000},
+                   .MktBidSize = 114,
+                   .MktOfferSize = 1059,
+                   .SecurityId = 3572611},
+                  {.MktBidPx = {.mantissa = 25900},
+                   .MktOfferPx = {.mantissa = 336000},
+                   .MktBidSize = 1,
+                   .MktOfferSize = 0,
+                   .SecurityId = 4210017}}};
+
+  uint8_t buffer[111]{};
+  uint8_t *tmp = buffer;
+  update_buffer(tmp, expected_mdp);
+  update_buffer(tmp, expected_inc);
+  update_buffer(tmp, expected_best_prices.S);
+  update_buffer(tmp, expected_best_prices.NoMDEntries);
+  for (const auto &entry : expected_best_prices.Entries) {
+    auto bid_mantissa = entry.MktBidPx.mantissa.has_value()
+                            ? entry.MktBidPx.mantissa.value()
+                            : simba::schema::types::NullValues::Int64;
+    update_buffer(tmp, bid_mantissa);
+    auto offer_mantissa = entry.MktOfferPx.mantissa.has_value()
+                              ? entry.MktOfferPx.mantissa.value()
+                              : simba::schema::types::NullValues::Int64;
+    update_buffer(tmp, offer_mantissa);
+    auto bid_size = entry.MktBidSize.has_value()
+                        ? entry.MktBidSize.has_value()
+                        : simba::schema::types::NullValues::Int64;
+    update_buffer(tmp, bid_size);
+    auto offer_size = entry.MktOfferSize.has_value()
+                          ? entry.MktOfferSize.has_value()
+                          : simba::schema::types::NullValues::Int64;
+    update_buffer(tmp, offer_size);
+    update_buffer(tmp, entry.SecurityId);
+  }
+
+  DecoderOutputFunctor output_fn;
+  simba::ProtocolDecoder pd(output_fn);
+  pd(buffer, 111);
+  assert_true("decoder_best_prices_test",
+              expected_mdp == output_fn.mdp_header() &&
+                  expected_inc == output_fn.inc_header());
 }
 
 void test_fixture::decode_order_book_snapshot_test() {
