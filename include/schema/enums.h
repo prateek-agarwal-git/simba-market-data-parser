@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <string_view>
 #include <string>
+#include <iostream>
 
 namespace simba::schema::enums {
 enum class MDUpdateAction : std::uint8_t { New = 0, Change = 1, Delete = 2 };
@@ -27,5 +28,11 @@ inline std::string to_string(MDEntryType entry){
     case MDEntryType ::EmptyBook:return "EmptyBook";
   }
   std::abort();
+}
+
+inline std::ostream& operator<<(std::ostream& os, MDUpdateAction update_action){
+  os<< to_string(update_action);
+  return os;
+
 }
 } // namespace simba_schema

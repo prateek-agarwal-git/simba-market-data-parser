@@ -34,8 +34,7 @@ struct IncrementalPacketHeader {
 inline std::ostream &operator<<(std::ostream &os,
                                 const IncrementalPacketHeader &inc) {
   os << "TransactTime=" << inc.TransactTime
-     << ",ExchangeTradingSessionId=" << inc.ExchangeTradingSessionId
-     << std::endl;
+     << ",ExchangeTradingSessionId=" << inc.ExchangeTradingSessionId;
   return os;
 }
 
@@ -50,11 +49,9 @@ struct SBEHeader {
   }
 } __attribute__((packed));
 
-inline std::ostream &operator<<(std::ostream &os,
-                                const SBEHeader &sbe) {
-  os << "BlockLength=" << sbe.BlockLength
-     << ",TemplateId=" <<sbe.TemplateId  << ",SchemaId=" <<sbe.SchemaId <<",Version=" << sbe.Version
-     << std::endl;
+inline std::ostream &operator<<(std::ostream &os, const SBEHeader &sbe) {
+  os << "BlockLength=" << sbe.BlockLength << ",TemplateId=" << sbe.TemplateId
+     << ",SchemaId=" << sbe.SchemaId << ",Version=" << sbe.Version;
   return os;
 }
 
