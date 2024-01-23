@@ -46,7 +46,6 @@ void JsonCreator::operator()(
   add_element(best_prices.S);
   current_json_string_ += comma;
   add_element(best_prices.NoMDEntries);
-  current_json_string_ += comma;
   add_array("Entries", best_prices.Entries);
   end_main_element();
 }
@@ -146,7 +145,6 @@ void JsonCreator::add_element(const schema::structs::groupSize &G) {
 
 void JsonCreator::add_element(
     const messages::application_layer::BestPricesEntry &entry) {
-  current_json_string_ += add_key("BestPricesEntry");
   current_json_string_ += start_brace;
   current_json_string_ += add_optional_record("MktBidPx", entry.MktBidPx);
   current_json_string_ += add_optional_record("MktOfferPx", entry.MktOfferPx);
@@ -160,7 +158,6 @@ void JsonCreator::add_element(
 
 void JsonCreator::add_element(
     const messages::application_layer::SnapShotEntry &entry) {
-  current_json_string_ += add_key("SnapShotEntry");
   current_json_string_ += start_brace;
   current_json_string_ += add_optional_record("MDEntryId", entry.MDEntryId);
   current_json_string_ +=
@@ -172,7 +169,7 @@ void JsonCreator::add_element(
       "MDFlags", entry.MDFlags);
   current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>(
       "MDFlags2", entry.MDFlags2);
-  current_json_string_ += add_enum_record("MDEntryType", entry.MDEntryType);
+  current_json_string_ += add_enum_record("MDEntryType", entry.MDEntryType,true);
   current_json_string_ += end_brace;
 }
 

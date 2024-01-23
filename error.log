@@ -1,25 +1,187 @@
-g++ -g -std=c++20  -Wall -I./include/  src/main.cpp -o build/main
-g++ -g -std=c++20  -Wall -I./include/ -c src/json_creator.cpp -o build/json_creator.o
-g++ -g -std=c++20  -Wall -I./include/  -c  src/pcap_reader.cpp  -o build/pcap_reader.o 
 g++ -g -std=c++20  -Wall -I./include/  tests/tests.cpp build/json_creator.o build/pcap_reader.o -o build/tests -lpcap -DCURDIR=\"/home/prateek/Code/simba-market-data-parser\"
-In file included from /usr/include/c++/11/cassert:44,
-                 from ./include/protocol_decoder.h:6,
-                 from tests/tests.cpp:3:
-./include/protocol_decoder.h: In instantiation of ‘void simba::ProtocolDecoder<OutputFunctor>::decode_snapshot_packet(const uint8_t*, int) [with OutputFunctor = simba::JsonCreator; uint8_t = unsigned char]’:
-./include/protocol_decoder.h:55:5:   required from ‘void simba::ProtocolDecoder<OutputFunctor>::operator()(const uint8_t*, int) [with OutputFunctor = simba::JsonCreator; uint8_t = unsigned char]’
-/usr/include/c++/11/bits/invoke.h:61:36:   required from ‘constexpr _Res std::__invoke_impl(std::__invoke_other, _Fn&&, _Args&& ...) [with _Res = void; _Fn = simba::ProtocolDecoder<simba::JsonCreator>&; _Args = {const unsigned char*, int}]’
-/usr/include/c++/11/bits/invoke.h:111:28:   required from ‘constexpr std::enable_if_t<is_invocable_r_v<_Res, _Callable, _Args ...>, _Res> std::__invoke_r(_Callable&&, _Args&& ...) [with _Res = void; _Callable = simba::ProtocolDecoder<simba::JsonCreator>&; _Args = {const unsigned char*, int}; std::enable_if_t<is_invocable_r_v<_Res, _Callable, _Args ...>, _Res> = void]’
-/usr/include/c++/11/bits/std_function.h:290:30:   required from ‘static _Res std::_Function_handler<_Res(_ArgTypes ...), _Functor>::_M_invoke(const std::_Any_data&, _ArgTypes&& ...) [with _Res = void; _Functor = simba::ProtocolDecoder<simba::JsonCreator>; _ArgTypes = {const unsigned char*, int}]’
-/usr/include/c++/11/bits/std_function.h:451:21:   required from ‘std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Functor = simba::ProtocolDecoder<simba::JsonCreator>&; _Constraints = void; _Res = void; _ArgTypes = {const unsigned char*, int}]’
-tests/tests.cpp:32:33:   required from here
-./include/protocol_decoder.h:101:26: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
-  101 |   assert(remaining_bytes == sizeof(OrderBookSnapShot::NoMDEntries) +
-      |          ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  102 |                                 sizeof(OrderBookSnapShot::S) +
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  103 |                                 order_book_snapshot.S.BlockLength +
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  104 |                                 order_book_snapshot.NoMDEntries.blockLength *
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  105 |                                     order_book_snapshot.NoMDEntries.numInGroup);
-      |                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+tests/tests.cpp: In member function ‘void tests::test_fixture::json_order_book_snapshot_test()’:
+tests/tests.cpp:56:59: error: expected ‘}’ before ‘;’ token
+   56 |       .NoMDEntries = {.blockLength = 57 ,.numInGroup = 1 };
+      |                                                           ^
+tests/tests.cpp:50:40: note: to match this ‘{’
+   50 |   OrderBookSnapShot order_book_snapshot{
+      |                                        ^
+tests/tests.cpp: At global scope:
+tests/tests.cpp:58:15: error: ‘SnapShotEntry’ was not declared in this scope; did you mean ‘simba::messages::application_layer::SnapShotEntry’?
+   58 |   std::vector<SnapShotEntry> entries(1);
+      |               ^~~~~~~~~~~~~
+      |               simba::messages::application_layer::SnapShotEntry
+In file included from ./include/json_creator.h:2,
+                 from tests/tests.cpp:2:
+./include/application_layer_messages.h:74:8: note: ‘simba::messages::application_layer::SnapShotEntry’ declared here
+   74 | struct SnapShotEntry {
+      |        ^~~~~~~~~~~~~
+tests/tests.cpp:58:28: error: template argument 1 is invalid
+   58 |   std::vector<SnapShotEntry> entries(1);
+      |                            ^
+tests/tests.cpp:58:28: error: template argument 2 is invalid
+tests/tests.cpp:59:3: error: ‘entries’ does not name a type
+   59 |   entries[0] = {.TransactTime = 1024,
+      |   ^~~~~~~
+tests/tests.cpp:64:15: warning: capture of variable ‘tests::output’ with non-automatic storage duration
+   64 |   auto cb = [&output](const std::string &json) { output = json; };
+      |               ^~~~~~
+tests/tests.cpp:63:15: note: ‘std::string tests::output’ declared here
+   63 |   std::string output;
+      |               ^~~~~~
+tests/tests.cpp:66:15: error: expected constructor, destructor, or type conversion before ‘(’ token
+   66 |   json_creator(simba::tag_structs::start_packet{});
+      |               ^
+tests/tests.cpp:66:50: error: expected unqualified-id before ‘)’ token
+   66 |   json_creator(simba::tag_structs::start_packet{});
+      |                                                  ^
+tests/tests.cpp:67:15: error: expected constructor, destructor, or type conversion before ‘(’ token
+   67 |   json_creator(order_book_snapshot);
+      |               ^
+tests/tests.cpp:68:15: error: expected constructor, destructor, or type conversion before ‘(’ token
+   68 |   json_creator(simba::tag_structs::end_packet{});
+      |               ^
+tests/tests.cpp:68:48: error: expected unqualified-id before ‘)’ token
+   68 |   json_creator(simba::tag_structs::end_packet{});
+      |                                                ^
+tests/tests.cpp:69:8: error: ‘cout’ in namespace ‘std’ does not name a type
+   69 |   std::cout <<output<< std::endl;
+      |        ^~~~
+In file included from ./include/tests.h:5,
+                 from tests/tests.cpp:1:
+/usr/include/c++/11/iostream:61:18: note: ‘std::cout’ declared here
+   61 |   extern ostream cout;          /// Linked to standard output
+      |                  ^~~~
+tests/tests.cpp:73:6: error: ‘test_fixture’ has not been declared
+   73 | void test_fixture::decoder_successful_compilation_test() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp:81:6: error: ‘test_fixture’ has not been declared
+   81 | void test_fixture::packet_reader_1() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void packet_reader_1()’:
+tests/tests.cpp:91:28: error: ‘current_directory_path’ was not declared in this scope
+   91 |   pcap_reader.read_packets(current_directory_path +
+      |                            ^~~~~~~~~~~~~~~~~~~~~~
+tests/tests.cpp:93:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+   93 |   assert_true("packet_reader_num_packets_test_1",
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:96:6: error: ‘test_fixture’ has not been declared
+   96 | void test_fixture::packet_reader_2() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void packet_reader_2()’:
+tests/tests.cpp:108:28: error: ‘current_directory_path’ was not declared in this scope
+  108 |   pcap_reader.read_packets(current_directory_path +
+      |                            ^~~~~~~~~~~~~~~~~~~~~~
+tests/tests.cpp:110:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  110 |   assert_true("packet_reader_num_packets_test_2",
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:113:6: error: ‘test_fixture’ has not been declared
+  113 | void test_fixture::packet_reader_3() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void packet_reader_3()’:
+tests/tests.cpp:124:28: error: ‘current_directory_path’ was not declared in this scope
+  124 |   pcap_reader.read_packets(current_directory_path +
+      |                            ^~~~~~~~~~~~~~~~~~~~~~
+tests/tests.cpp:126:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  126 |   assert_true("packet_reader_num_packets_test_3",
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:129:6: error: ‘test_fixture’ has not been declared
+  129 | void test_fixture::packet_reader_4() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void packet_reader_4()’:
+tests/tests.cpp:139:28: error: ‘current_directory_path’ was not declared in this scope
+  139 |   pcap_reader.read_packets(current_directory_path +
+      |                            ^~~~~~~~~~~~~~~~~~~~~~
+tests/tests.cpp:141:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  141 |   assert_true("packet_reader_num_packets_test_4",
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:144:6: error: ‘test_fixture’ has not been declared
+  144 | void test_fixture::packet_reader_5() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void packet_reader_5()’:
+tests/tests.cpp:154:7: error: ‘current_directory_path’ was not declared in this scope
+  154 |       current_directory_path +
+      |       ^~~~~~~~~~~~~~~~~~~~~~
+tests/tests.cpp:156:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  156 |   assert_true("packet_reader_num_packets_test_5",
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:159:6: error: ‘test_fixture’ has not been declared
+  159 | void test_fixture::json_best_prices_test() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void json_best_prices_test()’:
+tests/tests.cpp:162:44: error: ‘sbe_header_json_’ was not declared in this scope
+  162 |       std::string(R"({{"BestPrices": )") + sbe_header_json_ +
+      |                                            ^~~~~~~~~~~~~~~~
+tests/tests.cpp:171:31: error: ‘S_’ was not declared in this scope
+  171 |   BestPrices best_prices{.S = S_,
+      |                               ^~
+tests/tests.cpp:182:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  182 |   assert_true("json_best_prices_test", output == expected_json_output);
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:184:6: error: ‘test_fixture’ has not been declared
+  184 | void test_fixture::json_order_execution_test() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void json_order_execution_test()’:
+tests/tests.cpp:186:12: error: ‘S_’ was not declared in this scope
+  186 |       .S = S_,
+      |            ^~
+tests/tests.cpp:203:48: error: ‘sbe_header_json_’ was not declared in this scope
+  203 |       std::string(R"({{"OrderExecution": )") + sbe_header_json_ +
+      |                                                ^~~~~~~~~~~~~~~~
+tests/tests.cpp:212:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  212 |   assert_true("json_order_execution_test", output == expected_json_output);
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:214:6: error: ‘test_fixture’ has not been declared
+  214 | void test_fixture::json_incremental_header_test() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void json_incremental_header_test()’:
+tests/tests.cpp:228:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  228 |   assert_true("json_incremental_header_test", output == expected_json_output);
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:231:6: error: ‘test_fixture’ has not been declared
+  231 | void test_fixture::json_mdp_header_test() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void json_mdp_header_test()’:
+tests/tests.cpp:246:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  246 |   assert_true("json_mdp_header_test", output == expected_json_output);
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:248:6: error: ‘test_fixture’ has not been declared
+  248 | void test_fixture::json_order_update_test() {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp: In function ‘void json_order_update_test()’:
+tests/tests.cpp:250:12: error: ‘S_’ was not declared in this scope
+  250 |       .S = S_,
+      |            ^~
+tests/tests.cpp:262:45: error: ‘sbe_header_json_’ was not declared in this scope
+  262 |       std::string(R"({{"OrderUpdate": )") + sbe_header_json_ +
+      |                                             ^~~~~~~~~~~~~~~~
+tests/tests.cpp:271:3: error: ‘assert_true’ was not declared in this scope; did you mean ‘assert_perror’?
+  271 |   assert_true("json_order_update_test", ans == expected_json_output);
+      |   ^~~~~~~~~~~
+      |   assert_perror
+tests/tests.cpp: At global scope:
+tests/tests.cpp:274:6: error: ‘test_fixture’ has not been declared
+  274 | void test_fixture::assert_true(const std::string &test_name, bool expression) {
+      |      ^~~~~~~~~~~~
+tests/tests.cpp:278:1: error: expected declaration before ‘}’ token
+  278 | } // namespace tests
+      | ^
+make: *** [Makefile:11: build/tests] Error 1

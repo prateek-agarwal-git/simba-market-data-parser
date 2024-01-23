@@ -32,6 +32,10 @@ private:
 
   template <typename T>
   void add_array(const std::string &key, const std::vector<T> &entries) {
+    if (entries.empty())
+      return;
+
+    current_json_string_ += comma;
     current_json_string_ += add_key(key);
     current_json_string_ += "[";
     for (const auto &entry : entries) {
