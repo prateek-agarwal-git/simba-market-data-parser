@@ -51,7 +51,11 @@ struct OrderUpdate {
   std::uint32_t RptSeq;
   schema::enums::MDUpdateAction MDUpdateAction;
   schema::enums::MDEntryType MDEntryType;
-}; // 58 bytes
+  bool operator==(const OrderUpdate &other) const {
+    return std::memcmp((const void *)this, (const void *)(&other),
+                       sizeof(OrderUpdate)) == 0;
+  }
+}__attribute__((packed)); // 58 bytes
 
 // same struct for full or partial execution as well as on calendar spreads.
 // The / difference is in the values of respective fields.

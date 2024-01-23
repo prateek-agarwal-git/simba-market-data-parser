@@ -23,93 +23,111 @@ int main() {
 namespace tests {
 
 void test_fixture::run_tests() {
-  // run_packet_reader_tests();
+  run_packet_reader_tests();
   run_protocol_decoder_tests();
-  //  run_json_creator_tests();
+  run_json_creator_tests();
 }
 
 void test_fixture::run_protocol_decoder_tests() {
   decode_order_update_test();
-//  decode_order_execution_test();
-//  decode_best_prices_test();
-//  decode_order_book_snapshot_test();
+  decode_order_execution_test();
+  //  decode_best_prices_test();
+  //  decode_order_book_snapshot_test();
 }
 
 void test_fixture::decode_order_update_test() {
   using namespace simba::messages::application_layer;
   using namespace simba::schema::structs;
+  using namespace simba::schema::enums;
   DecoderOutputFunctor output_fn_;
   simba::ProtocolDecoder pd(output_fn_);
-  static const uint8_t pkt33[86] = {
-      0x13, 0xee, 0xbc, 0x01, 0x56, 0x00,             /* ......V. */
-      0x09, 0x00, 0x64, 0xf5, 0x99, 0x04, 0xe2, 0xb9, /* ..d..... */
-      0x8c, 0x17, 0x8a, 0x5b, 0x99, 0x04, 0xe2, 0xb9, /* ...[.... */
-      0x8c, 0x17, 0xf6, 0x1a, 0x00, 0x00, 0x32, 0x00, /* ......2. */
-      0x0f, 0x00, 0x44, 0x4d, 0x04, 0x00, 0x67, 0xba, /* ..DM..g. */
-      0x34, 0x00, 0xf6, 0x1a, 0x3e, 0x1b, 0x40, 0xc1, /* 4...>.@. */
-      0x56, 0x73, 0x02, 0x00, 0x00, 0x00, 0x0a, 0x00, /* Vs...... */
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x10, /* ........ */
-      0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /*  ....... */
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xad, 0x44, /* .......D */
-      0x29, 0x00, 0x43, 0x15, 0x5a, 0x00, 0x02, 0x30  /* ).C.Z..0 */
-  };
-
-//
-//
-//1696935540002741130
-//6902
-//50
-//15
-//19780
-//4
-//1963036131447847527
-//10525000000
-//10
-//2101249
-//0
-//2704557
-//5903683
-//Delete
-//2
-//Bid
-//48
   uint8_t buffer[86]{};
-  MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29158931,.MsgSize = 86,  .MsgFlags = 9, .SendingTime = 1696935540002780516} ;
-  std::memcpy(buffer, reinterpret_cast<void*>(&expected_mdp), sizeof(expected_mdp));
+  MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29158931,
+                                      .MsgSize = 86,
+                                      .MsgFlags = 9,
+                                      .SendingTime = 1696935540002780516};
+  int offset = 0;
+  std::memcpy(buffer, reinterpret_cast<void *>(&expected_mdp),
+              sizeof(expected_mdp));
+  offset += sizeof(expected_mdp);
+  IncrementalPacketHeader expected_inc{.TransactTime = 1696935540002741130,
+                                       .ExchangeTradingSessionId = 6902};
+
+  std::memcpy(buffer + offset, reinterpret_cast<void *>(&expected_inc),
+              sizeof(expected_inc));
+  offset += sizeof(expected_inc);
+  OrderUpdate expected_order_update{.S = {.BlockLength = 50,
+                                          .TemplateId = 15,
+                                          .SchemaId = 19780,
+                                          .Version = 4},
+                                    .MDEntryId = {1963036131447847527},
+                                    .MDEntryPx = {.mantissa = 10525000000},
+                                    .MDFlags = 2101249,
+                                    .MDFlags2 = 0,
+                                    .SecurityId = 2704557,
+                                    .RptSeq = 5903684,
+                                    .MDUpdateAction = MDUpdateAction::Delete,
+                                    .MDEntryType = MDEntryType::Bid};
+  // order_update is POD so far. No std::optionals. This struct is also made
+  // packed in application_layer_messages.h
+  std::memcpy(buffer + offset, reinterpret_cast<void *>(&expected_order_update),
+              sizeof(expected_order_update));
+
   pd(buffer, 86);
-  auto output_mdp= output_fn_.mdp_header();
-  assert_true("decoder_order_update_mdp", output_mdp == expected_mdp);
-//  auto inc_header = output_fn_.inc_header();
-//  std::cout << inc_header.TransactTime << std::endl;
-//  std::cout << inc_header.ExchangeTradingSessionId << std::endl;
-//  auto order_update = output_fn_.order_update();
-//  std::cout <<order_update.S.BlockLength<<std::endl;
-//  std::cout <<order_update.S.TemplateId<<std::endl;
-//  std::cout <<order_update.S.SchemaId<<std::endl;
-//  std::cout <<order_update.S.Version<<std::endl;
-//  std::cout <<order_update.MDEntryId<<std::endl;
-//  std::cout <<order_update.MDEntryPx.mantissa<<std::endl;
-//  std::cout <<order_update.MDEntrySize<<std::endl;
-//  std::cout <<order_update.MDFlags<<std::endl;
-//  std::cout <<order_update.MDFlags2<<std::endl;
-//  std::cout <<order_update.SecurityId<<std::endl;
-//  std::cout <<order_update.RptSeq<<std::endl;
-//  std::cout <<simba::schema::enums::to_string(order_update.MDUpdateAction)<<std::endl;
-//  std::cout <<int(order_update.MDUpdateAction)<<std::endl;
-//  std::cout <<simba::schema::enums::to_string(order_update.MDEntryType)<<std::endl;
-// std::cout <<int(order_update.MDEntryType)<<std::endl;
+  auto output_mdp = output_fn_.mdp_header();
+  auto output_inc = output_fn_.inc_header();
+  auto output_update = output_fn_.order_update();
+  assert_true("decoder_order_update",
+              expected_mdp == output_mdp && output_inc == expected_inc &&
+                  output_update == expected_order_update);
+}
+
+void test_fixture::decode_order_execution_test() {
+  using namespace simba::messages::application_layer;
+  using namespace simba::schema::structs;
+  using namespace simba::schema::enums;
+  DecoderOutputFunctor output_fn;
+  simba::ProtocolDecoder pd(output_fn);
+  static const unsigned char pkt1[110] = {
+       0x11, 0x51, 0xbf, 0x01, 0x6e, 0x00, /* ...Q..n. */
+      0x09, 0x00, 0x7f, 0xcb, 0x95, 0x05, 0x43, 0xba, /* ......C. */
+      0x8c, 0x17, 0x6b, 0x69, 0x94, 0x05, 0x43, 0xba, /* ..ki..C. */
+      0x8c, 0x17, 0xf6, 0x1a, 0x00, 0x00, 0x4a, 0x00, /* ......J. */
+      0x10, 0x00, 0x44, 0x4d, 0x04, 0x00, 0x75, 0x81, /* ..DM..u. */
+      0x04, 0x00, 0xf6, 0x1a, 0xee, 0x1b, 0x60, 0x1d, /* ......`. */
+      0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, /* ........ */
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x60, 0x1d, /* ......`. */
+      0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, /* ........ */
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x9e, 0x00, /* ........ */
+      0x01, 0x00, 0xf6, 0x1a, 0xee, 0x1b, 0x01, 0x10, /* ........ */
+      0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, /* ........ */
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x83, 0x83, /* ........ */
+      0x36, 0x00, 0x7c, 0x68, 0x03, 0x00, 0x01, 0x30  /* 6.|h...0 */
+  };
+  pd(pkt1,  110);
+  auto mdp_header= output_fn.mdp_header();
+  std::cout<<mdp_header;
+  auto inc_header= output_fn.inc_header();
+  std::cout<<inc_header;
+  auto expected_order_exec = output_fn.order_execution();
+  std::cout << expected_order_exec.S ;
+  //"BlockLength=74,TemplateId=16,SchemaId=19780,Version=4"
+  uint8_t buffer[110]{};
+  MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29315345,
+                                      .MsgSize = 110,
+                                      .MsgFlags = 9,
+                                      .SendingTime = 1696935956631112575};
+  IncrementalPacketHeader expected_inc{.TransactTime = 1696935956631021931,
+                                       .ExchangeTradingSessionId = 6902};
 }
 void test_fixture::decode_best_prices_test() {
-  DecoderOutputFunctor output_fn_;
-  simba::ProtocolDecoder pd(output_fn_);
-
-  // pd(pkt33, 86);
-}
-void test_fixture::decode_order_execution_test() {
-
+  using namespace simba::messages::application_layer;
+  using namespace simba::schema::structs;
+  using namespace simba::schema::enums;
   DecoderOutputFunctor output_fn_;
   simba::ProtocolDecoder pd(output_fn_);
 }
+
 void test_fixture::decode_order_book_snapshot_test() {
   DecoderOutputFunctor output_fn_;
   simba::ProtocolDecoder pd(output_fn_);
