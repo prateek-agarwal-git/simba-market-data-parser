@@ -10,7 +10,7 @@
 namespace simba {
 
 template <typename OutputFunctor> struct ProtocolDecoder {
-  ProtocolDecoder(OutputFunctor output) : output_(output) {}
+  ProtocolDecoder(OutputFunctor &output) : output_(output) {}
   void operator()(const std::uint8_t *payload, int payload_length);
 
 private:
@@ -28,12 +28,15 @@ private:
     }
   }
   void decode_incremental_packet(const uint8_t *buffer, int remaining_bytes);
-  void decode_snapshot_packet(const uint8_t *buffer, std::size_t remaining_bytes);
+  void decode_snapshot_packet(const uint8_t *buffer,
+                              std::size_t remaining_bytes);
 
   std::size_t process_best_prices(const uint8_t *buffer);
   std::size_t process_order_update(const uint8_t *buffer);
   std::size_t process_order_execution(const uint8_t *buffer);
-  OutputFunctor output_;
+  // made this a reference so that it can be accessed later for testing
+  // purposes. See tests/decoder_output_functor.h
+  OutputFunctor &output_;
 };
 
 template <typename OutputFunctor>
@@ -98,11 +101,11 @@ ProtocolDecoder<OutputFunctor>::decode_snapshot_packet(const uint8_t *buffer,
 
   output_(order_book_snapshot);
   output_(tag_structs::end_packet{});
-  //assert(remaining_bytes == sizeof(OrderBookSnapShot::NoMDEntries) +
-  //                              sizeof(OrderBookSnapShot::S) +
-  //                              order_book_snapshot.S.BlockLength +
-  //                              order_book_snapshot.NoMDEntries.blockLength *
-  //                                  order_book_snapshot.NoMDEntries.numInGroup);
+  // assert(remaining_bytes == sizeof(OrderBookSnapShot::NoMDEntries) +
+  //                               sizeof(OrderBookSnapShot::S) +
+  //                               order_book_snapshot.S.BlockLength +
+  //                               order_book_snapshot.NoMDEntries.blockLength *
+  //                                   order_book_snapshot.NoMDEntries.numInGroup);
   return;
 }
 

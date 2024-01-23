@@ -23,6 +23,7 @@ struct JsonCreator {
   void operator()(const messages::application_layer::OrderBookSnapShot &);
 
 private:
+
   void add_element(const schema::structs::SBEHeader &);
   void add_element(const schema::structs::groupSize &);
   void add_element(const messages::application_layer::BestPricesEntry &);

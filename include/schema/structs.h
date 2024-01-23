@@ -6,6 +6,9 @@ struct MarketDataPacketHeader {
   std::uint16_t MsgSize;
   std::uint16_t MsgFlags;
   std::uint64_t SendingTime;
+  bool operator==(const MarketDataPacketHeader & other) const{
+return    MsgFlags == other.MsgFlags  && MsgSeqNum == other.MsgSeqNum && SendingTime == other.SendingTime && MsgSize == other.MsgSize;
+  }
 } __attribute__((packed));
 
 struct IncrementalPacketHeader {

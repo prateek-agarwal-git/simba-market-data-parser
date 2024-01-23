@@ -1,10 +1,12 @@
-#include "tests.h"
+#include "tests/tests.h"
 #include "json_creator.h"
 #include "pcap_reader.h"
 #include "protocol_decoder.h"
 #include "schema/bitmasks.h"
 #include "schema/structs.h"
+#include "tests/decoder_output_functor.h"
 #include <cassert>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
@@ -21,9 +23,96 @@ int main() {
 namespace tests {
 
 void test_fixture::run_tests() {
-  decoder_successful_compilation_test();
-  run_packet_reader_tests();
-  run_json_creator_tests();
+  // run_packet_reader_tests();
+  run_protocol_decoder_tests();
+  //  run_json_creator_tests();
+}
+
+void test_fixture::run_protocol_decoder_tests() {
+  decode_order_update_test();
+//  decode_order_execution_test();
+//  decode_best_prices_test();
+//  decode_order_book_snapshot_test();
+}
+
+void test_fixture::decode_order_update_test() {
+  using namespace simba::messages::application_layer;
+  using namespace simba::schema::structs;
+  DecoderOutputFunctor output_fn_;
+  simba::ProtocolDecoder pd(output_fn_);
+  static const uint8_t pkt33[86] = {
+      0x13, 0xee, 0xbc, 0x01, 0x56, 0x00,             /* ......V. */
+      0x09, 0x00, 0x64, 0xf5, 0x99, 0x04, 0xe2, 0xb9, /* ..d..... */
+      0x8c, 0x17, 0x8a, 0x5b, 0x99, 0x04, 0xe2, 0xb9, /* ...[.... */
+      0x8c, 0x17, 0xf6, 0x1a, 0x00, 0x00, 0x32, 0x00, /* ......2. */
+      0x0f, 0x00, 0x44, 0x4d, 0x04, 0x00, 0x67, 0xba, /* ..DM..g. */
+      0x34, 0x00, 0xf6, 0x1a, 0x3e, 0x1b, 0x40, 0xc1, /* 4...>.@. */
+      0x56, 0x73, 0x02, 0x00, 0x00, 0x00, 0x0a, 0x00, /* Vs...... */
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x10, /* ........ */
+      0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, /*  ....... */
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xad, 0x44, /* .......D */
+      0x29, 0x00, 0x43, 0x15, 0x5a, 0x00, 0x02, 0x30  /* ).C.Z..0 */
+  };
+
+//
+//
+//1696935540002741130
+//6902
+//50
+//15
+//19780
+//4
+//1963036131447847527
+//10525000000
+//10
+//2101249
+//0
+//2704557
+//5903683
+//Delete
+//2
+//Bid
+//48
+  uint8_t buffer[86]{};
+  MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29158931,.MsgSize = 86,  .MsgFlags = 9, .SendingTime = 1696935540002780516} ;
+  std::memcpy(buffer, reinterpret_cast<void*>(&expected_mdp), sizeof(expected_mdp));
+  pd(buffer, 86);
+  auto output_mdp= output_fn_.mdp_header();
+  assert_true("decoder_order_update_mdp", output_mdp == expected_mdp);
+//  auto inc_header = output_fn_.inc_header();
+//  std::cout << inc_header.TransactTime << std::endl;
+//  std::cout << inc_header.ExchangeTradingSessionId << std::endl;
+//  auto order_update = output_fn_.order_update();
+//  std::cout <<order_update.S.BlockLength<<std::endl;
+//  std::cout <<order_update.S.TemplateId<<std::endl;
+//  std::cout <<order_update.S.SchemaId<<std::endl;
+//  std::cout <<order_update.S.Version<<std::endl;
+//  std::cout <<order_update.MDEntryId<<std::endl;
+//  std::cout <<order_update.MDEntryPx.mantissa<<std::endl;
+//  std::cout <<order_update.MDEntrySize<<std::endl;
+//  std::cout <<order_update.MDFlags<<std::endl;
+//  std::cout <<order_update.MDFlags2<<std::endl;
+//  std::cout <<order_update.SecurityId<<std::endl;
+//  std::cout <<order_update.RptSeq<<std::endl;
+//  std::cout <<simba::schema::enums::to_string(order_update.MDUpdateAction)<<std::endl;
+//  std::cout <<int(order_update.MDUpdateAction)<<std::endl;
+//  std::cout <<simba::schema::enums::to_string(order_update.MDEntryType)<<std::endl;
+// std::cout <<int(order_update.MDEntryType)<<std::endl;
+}
+void test_fixture::decode_best_prices_test() {
+  DecoderOutputFunctor output_fn_;
+  simba::ProtocolDecoder pd(output_fn_);
+
+  // pd(pkt33, 86);
+}
+void test_fixture::decode_order_execution_test() {
+
+  DecoderOutputFunctor output_fn_;
+  simba::ProtocolDecoder pd(output_fn_);
+}
+void test_fixture::decode_order_book_snapshot_test() {
+  DecoderOutputFunctor output_fn_;
+  simba::ProtocolDecoder pd(output_fn_);
 }
 
 void test_fixture::run_packet_reader_tests() {
@@ -78,16 +167,7 @@ void test_fixture::json_order_book_snapshot_test() {
   json_creator(simba::tag_structs::start_packet{});
   json_creator(order_book_snapshot);
   json_creator(simba::tag_structs::end_packet{});
-  std::cout << output << std::endl;
-  std::cout << expected_json_output << std::endl;
   assert_true("json_order_book_snapshot", output == expected_json_output);
-}
-void test_fixture::decoder_successful_compilation_test() {
-  std::string output;
-  auto cb = [&output](const std::string &json) { output = json; };
-  simba::JsonCreator json_creator(std::move(cb));
-  simba::ProtocolDecoder pd(json_creator);
-  reader::PcapReader reader(pd);
 }
 
 void test_fixture::packet_reader_1() {
