@@ -9,17 +9,9 @@
 namespace simba::messages::application_layer {
 enum class MessageTypes : std::uint16_t {
   BestPrices = 14,
-  EmptyBook = 4,
   OrderUpdate = 15,
   OrderExecution = 16,
   OrderBookSnapShot = 17,
-  SecurityDefinition = 18,
-  SecurityStatus = 9,
-  SecurityDefintionUpdateReport = 10,
-  TradingSessionStatus = 11,
-  MarketDataRequest = 1002,
-  DiscreteAuction = 13,
-  SecurityMassStatus = 19
 };
 
 struct BestPricesEntry {
@@ -28,13 +20,20 @@ struct BestPricesEntry {
   schema::types::Int64NULL MktBidSize;
   schema::types::Int64NULL MktOfferSize;
   std::int32_t SecurityId;
+  bool operator==(const BestPricesEntry &other) const {
+    return MktBidPx == other.MktBidPx && MktOfferPx == other.MktOfferPx &&
+           MktBidSize == other.MktBidSize && MktOfferSize == other.MktOfferSize&&SecurityId == other.SecurityId;
+  }
 };
 struct BestPrices {
   schema::structs::SBEHeader S;
   schema::structs::groupSize NoMDEntries;
   std::vector<BestPricesEntry> Entries;
+  bool operator==(const BestPrices &other) const {
+    return S == other.S && NoMDEntries == other.NoMDEntries &&
+           Entries == other.Entries;
+  }
 };
-
 
 struct OrderUpdate {
   schema::structs::SBEHeader S;
@@ -51,7 +50,7 @@ struct OrderUpdate {
     return std::memcmp((const void *)this, (const void *)(&other),
                        sizeof(OrderUpdate)) == 0;
   }
-}__attribute__((packed)); // 58 bytes
+} __attribute__((packed)); // 58 bytes
 
 // same struct for full or partial execution as well as on calendar spreads.
 // The / difference is in the values of respective fields.
@@ -69,6 +68,15 @@ struct OrderExecution {
   std::uint32_t RptSeq;
   schema::enums::MDUpdateAction MDUpdateAction;
   schema::enums::MDEntryType MDEntryType;
+  bool operator==(const OrderExecution &other) const {
+    return (S == other.S) && MDEntryId == other.MDEntryId &&
+           MDEntryPx == other.MDEntryPx && MDEntrySize == other.MDEntrySize &&
+           LastPx == other.LastPx && LastQty == other.LastQty &&
+           TradeId == other.TradeId && MDFlags == other.MDFlags &&
+           MDFlags2 == other.MDFlags2 && SecurityId == other.SecurityId &&
+           RptSeq == other.RptSeq && MDUpdateAction == other.MDUpdateAction &&
+           MDEntryType == other.MDEntryType;
+  }
 };
 
 struct SnapShotEntry {
@@ -80,6 +88,12 @@ struct SnapShotEntry {
   std::uint64_t MDFlags;
   std::uint64_t MDFlags2;
   schema::enums::MDEntryType MDEntryType;
+  bool operator==(const SnapShotEntry &other) const {
+    return MDEntryId == other.MDEntryId && MDEntryPx == other.MDEntryPx &&
+           MDEntrySize == other.MDEntrySize && TradeId == other.TradeId &&
+           MDFlags == other.MDFlags && MDFlags2 == other.MDFlags2 &&
+           MDEntryType == other.MDEntryType;
+  }
 };
 
 struct OrderBookSnapShot {
@@ -90,6 +104,14 @@ struct OrderBookSnapShot {
   std::uint32_t ExchangeTradingSessionId;
   schema::structs::groupSize NoMDEntries;
   std::vector<SnapShotEntry> Entries;
+
+  bool operator==(const OrderBookSnapShot &other) const {
+    return S == other.S &&
+           LastMsgSeqNumProcessed == other.LastMsgSeqNumProcessed &&
+           RptSeq == other.RptSeq &&
+           ExchangeTradingSessionId == other.ExchangeTradingSessionId &&
+           NoMDEntries == other.NoMDEntries && Entries == other.Entries;
+  }
 };
 
 } // namespace simba::messages::application_layer

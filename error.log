@@ -1,526 +1,302 @@
-g++ -g -std=c++20  -Wall -I./include/  tests/tests.cpp build/json_creator.o build/pcap_reader.o -o build/tests -lpcap -DCURDIR=\"/home/prateek/Code/simba-market-data-parser\"
-tests/tests.cpp: In member function ‘void tests::test_fixture::decode_order_execution_test()’:
-tests/tests.cpp:114:13: error: no match for ‘operator<<’ (operand types are ‘std::ostream’ {aka ‘std::basic_ostream<char>’} and ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’})
-  114 |   std::cout << order_exec.MDEntrySize;
-      |   ~~~~~~~~~ ^~ ~~~~~~~~~~~~~~~~~~~~~~
-      |        |                  |
-      |        |                  simba::schema::types::Int64NULL {aka std::optional<long int>}
-      |        std::ostream {aka std::basic_ostream<char>}
-tests/tests.cpp:114:13: note: candidate: ‘operator<<(int, int)’ (built-in)
-  114 |   std::cout << order_exec.MDEntrySize;
-      |   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
-tests/tests.cpp:114:13: note:   no known conversion for argument 2 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘int’
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:108:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ostream_type& (*)(std::basic_ostream<_CharT, _Traits>::__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  108 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:108:36: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘std::basic_ostream<char>::__ostream_type& (*)(std::basic_ostream<char>::__ostream_type&)’ {aka ‘std::basic_ostream<char>& (*)(std::basic_ostream<char>&)’}
-  108 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
-      |                  ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
-/usr/include/c++/11/ostream:117:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ios_type& (*)(std::basic_ostream<_CharT, _Traits>::__ios_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::basic_ostream<_CharT, _Traits>::__ios_type = std::basic_ios<char>]’
-  117 |       operator<<(__ios_type& (*__pf)(__ios_type&))
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:117:32: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘std::basic_ostream<char>::__ios_type& (*)(std::basic_ostream<char>::__ios_type&)’ {aka ‘std::basic_ios<char>& (*)(std::basic_ios<char>&)’}
-  117 |       operator<<(__ios_type& (*__pf)(__ios_type&))
-      |                  ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
-/usr/include/c++/11/ostream:127:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::ios_base& (*)(std::ios_base&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  127 |       operator<<(ios_base& (*__pf) (ios_base&))
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:127:30: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘std::ios_base& (*)(std::ios_base&)’
-  127 |       operator<<(ios_base& (*__pf) (ios_base&))
-      |                  ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
-/usr/include/c++/11/ostream:166:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  166 |       operator<<(long __n)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:166:23: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘long int’
-  166 |       operator<<(long __n)
-      |                  ~~~~~^~~
-/usr/include/c++/11/ostream:170:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  170 |       operator<<(unsigned long __n)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:170:32: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘long unsigned int’
-  170 |       operator<<(unsigned long __n)
-      |                  ~~~~~~~~~~~~~~^~~
-/usr/include/c++/11/ostream:174:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(bool) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  174 |       operator<<(bool __n)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:174:23: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘bool’
-  174 |       operator<<(bool __n)
-      |                  ~~~~~^~~
-In file included from /usr/include/c++/11/ostream:829,
-                 from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/bits/ostream.tcc:91:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(short int) [with _CharT = char; _Traits = std::char_traits<char>]’
-   91 |     basic_ostream<_CharT, _Traits>::
-      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/usr/include/c++/11/bits/ostream.tcc:92:22: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘short int’
-   92 |     operator<<(short __n)
-      |                ~~~~~~^~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:181:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(short unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  181 |       operator<<(unsigned short __n)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:181:33: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘short unsigned int’
-  181 |       operator<<(unsigned short __n)
-      |                  ~~~~~~~~~~~~~~~^~~
-In file included from /usr/include/c++/11/ostream:829,
-                 from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/bits/ostream.tcc:105:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(int) [with _CharT = char; _Traits = std::char_traits<char>]’
-  105 |     basic_ostream<_CharT, _Traits>::
-      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/usr/include/c++/11/bits/ostream.tcc:106:20: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘int’
-  106 |     operator<<(int __n)
-      |                ~~~~^~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:192:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  192 |       operator<<(unsigned int __n)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:192:31: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘unsigned int’
-  192 |       operator<<(unsigned int __n)
-      |                  ~~~~~~~~~~~~~^~~
-/usr/include/c++/11/ostream:201:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long long int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  201 |       operator<<(long long __n)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:201:28: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘long long int’
-  201 |       operator<<(long long __n)
-      |                  ~~~~~~~~~~^~~
-/usr/include/c++/11/ostream:205:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long long unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  205 |       operator<<(unsigned long long __n)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:205:37: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘long long unsigned int’
-  205 |       operator<<(unsigned long long __n)
-      |                  ~~~~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/11/ostream:220:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(double) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  220 |       operator<<(double __f)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:220:25: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘double’
-  220 |       operator<<(double __f)
-      |                  ~~~~~~~^~~
-/usr/include/c++/11/ostream:224:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(float) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  224 |       operator<<(float __f)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:224:24: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘float’
-  224 |       operator<<(float __f)
-      |                  ~~~~~~^~~
-/usr/include/c++/11/ostream:232:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long double) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  232 |       operator<<(long double __f)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:232:30: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘long double’
-  232 |       operator<<(long double __f)
-      |                  ~~~~~~~~~~~~^~~
-/usr/include/c++/11/ostream:245:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(const void*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
-  245 |       operator<<(const void* __p)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:245:30: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘const void*’
-  245 |       operator<<(const void* __p)
-      |                  ~~~~~~~~~~~~^~~
-/usr/include/c++/11/ostream:250:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::nullptr_t) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::nullptr_t = std::nullptr_t]’
-  250 |       operator<<(nullptr_t)
-      |       ^~~~~~~~
-/usr/include/c++/11/ostream:250:18: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘std::nullptr_t’
-  250 |       operator<<(nullptr_t)
-      |                  ^~~~~~~~~
-In file included from /usr/include/c++/11/ostream:829,
-                 from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/bits/ostream.tcc:119:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__streambuf_type*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__streambuf_type = std::basic_streambuf<char>]’
-  119 |     basic_ostream<_CharT, _Traits>::
-      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/usr/include/c++/11/bits/ostream.tcc:120:34: note:   no known conversion for argument 1 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘std::basic_ostream<char>::__streambuf_type*’ {aka ‘std::basic_streambuf<char>*’}
-  120 |     operator<<(__streambuf_type* __sbin)
-      |                ~~~~~~~~~~~~~~~~~~^~~~~~
-In file included from /usr/include/c++/11/bits/basic_string.h:48,
-                 from /usr/include/c++/11/string:55,
+g++ -g -std=c++20  -Wall -I./include/  src/main.cpp -o build/main
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h: In instantiation of ‘static constexpr bool std::__equal<_BoolType>::equal(_II1, _II1, _II2) [with _II1 = const simba::messages::application_layer::BestPricesEntry*; _II2 = const simba::messages::application_layer::BestPricesEntry*; bool _BoolType = false]’:
+/usr/include/c++/11/bits/stl_algobase.h:1211:43:   required from ‘constexpr bool std::__equal_aux1(_II1, _II1, _II2) [with _II1 = const simba::messages::application_layer::BestPricesEntry*; _II2 = const simba::messages::application_layer::BestPricesEntry*]’
+/usr/include/c++/11/bits/stl_algobase.h:1219:31:   required from ‘constexpr bool std::__equal_aux(_II1, _II1, _II2) [with _II1 = __gnu_cxx::__normal_iterator<const simba::messages::application_layer::BestPricesEntry*, std::vector<simba::messages::application_layer::BestPricesEntry> >; _II2 = __gnu_cxx::__normal_iterator<const simba::messages::application_layer::BestPricesEntry*, std::vector<simba::messages::application_layer::BestPricesEntry> >]’
+/usr/include/c++/11/bits/stl_algobase.h:1556:30:   required from ‘constexpr bool std::equal(_II1, _II1, _II2) [with _II1 = __gnu_cxx::__normal_iterator<const simba::messages::application_layer::BestPricesEntry*, std::vector<simba::messages::application_layer::BestPricesEntry> >; _II2 = __gnu_cxx::__normal_iterator<const simba::messages::application_layer::BestPricesEntry*, std::vector<simba::messages::application_layer::BestPricesEntry> >]’
+/usr/include/c++/11/bits/stl_vector.h:1894:21:   required from ‘bool std::operator==(const std::vector<_Tp, _Alloc>&, const std::vector<_Tp, _Alloc>&) [with _Tp = simba::messages::application_layer::BestPricesEntry; _Alloc = std::allocator<simba::messages::application_layer::BestPricesEntry>]’
+./include/application_layer_messages.h:34:29:   required from here
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: error: no match for ‘operator==’ (operand types are ‘const simba::messages::application_layer::BestPricesEntry’ and ‘const simba::messages::application_layer::BestPricesEntry’)
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from src/main.cpp:4:
+./include/application_layer_messages.h:23:8: note: candidate: ‘bool simba::messages::application_layer::BestPricesEntry::operator==(const simba::messages::application_layer::BestPricesEntry&)’ (near match)
+   23 |   bool operator==(const BestPricesEntry &other) {
+      |        ^~~~~~~~
+./include/application_layer_messages.h:23:8: note:   passing ‘const simba::messages::application_layer::BestPricesEntry*’ as ‘this’ argument discards qualifiers
+In file included from /usr/include/c++/11/bits/stl_algobase.h:67,
+                 from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_iterator.h:495:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const std::reverse_iterator<_IteratorL>&, const std::reverse_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+  495 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/11/bits/stl_iterator.h:495:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/bits/stl_algobase.h:67,
+                 from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_iterator.h:1585:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’ (reversed)
+ 1585 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/11/bits/stl_iterator.h:1585:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::move_iterator<_IteratorL>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from src/main.cpp:2:
+/usr/include/c++/11/string_view:541:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(std::basic_string_view<_CharT, _Traits>, std::__type_identity_t<std::basic_string_view<_CharT, _Traits> >)’ (reversed)
+  541 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/11/string_view:541:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘simba::messages::application_layer::BestPricesEntry’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/string:41,
                  from /usr/include/c++/11/bits/locale_classes.h:40,
                  from /usr/include/c++/11/bits/ios_base.h:41,
                  from /usr/include/c++/11/ios:42,
                  from /usr/include/c++/11/ostream:38,
                  from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/string_view:667:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, std::basic_string_view<_CharT, _Traits>)’
-  667 |     operator<<(basic_ostream<_CharT, _Traits>& __os,
+                 from src/main.cpp:3:
+/usr/include/c++/11/bits/allocator.h:218:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const std::allocator<_CharT>&, const std::allocator<_T2>&)’ (reversed)
+  218 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
       |     ^~~~~~~~
-/usr/include/c++/11/string_view:667:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   ‘std::optional<long int>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
+/usr/include/c++/11/bits/allocator.h:218:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::allocator<_CharT>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
 In file included from /usr/include/c++/11/string:55,
                  from /usr/include/c++/11/bits/locale_classes.h:40,
                  from /usr/include/c++/11/bits/ios_base.h:41,
                  from /usr/include/c++/11/ios:42,
                  from /usr/include/c++/11/ostream:38,
                  from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/bits/basic_string.h:6531:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
- 6531 |     operator<<(basic_ostream<_CharT, _Traits>& __os,
+                 from src/main.cpp:3:
+/usr/include/c++/11/bits/basic_string.h:6248:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’ (reversed)
+ 6248 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
       |     ^~~~~~~~
-/usr/include/c++/11/bits/basic_string.h:6531:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
+/usr/include/c++/11/bits/basic_string.h:6248:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from ./include/schema/types.h:6,
+                 from ./include/application_layer_messages.h:5,
+                 from src/main.cpp:4:
+/usr/include/c++/11/optional:1045:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const std::optional<_Tp>&, const std::optional<_Up>&)’ (reversed)
+ 1045 |     operator==(const optional<_Tp>& __lhs, const optional<_Up>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/11/optional:1045:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::optional<_Tp>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from ./include/schema/types.h:6,
+                 from ./include/application_layer_messages.h:5,
+                 from src/main.cpp:4:
+/usr/include/c++/11/optional:1105:5: note: candidate: ‘template<class _Tp> constexpr bool std::operator==(const std::optional<_Tp>&, std::nullopt_t)’ (reversed)
+ 1105 |     operator==(const optional<_Tp>& __lhs, nullopt_t) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/11/optional:1105:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::optional<_Tp>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from ./include/schema/types.h:6,
+                 from ./include/application_layer_messages.h:5,
+                 from src/main.cpp:4:
+/usr/include/c++/11/optional:1173:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Tp, _Up> std::operator==(const std::optional<_Tp>&, const _Up&)’ (reversed)
+ 1173 |     operator==(const optional<_Tp>& __lhs, const _Up& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/11/optional:1173:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::optional<_Tp>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from ./include/schema/types.h:6,
+                 from ./include/application_layer_messages.h:5,
+                 from src/main.cpp:4:
+/usr/include/c++/11/optional:1179:5: note: candidate: ‘template<class _Tp, class _Up> constexpr std::__optional_eq_t<_Up, _Tp> std::operator==(const _Up&, const std::optional<_Tp>&)’ (reversed)
+ 1179 |     operator==(const _Up& __lhs, const optional<_Tp>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/11/optional:1179:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::optional<_Tp>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
 In file included from /usr/include/c++/11/bits/ios_base.h:46,
                  from /usr/include/c++/11/ios:42,
                  from /usr/include/c++/11/ostream:38,
                  from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/system_error:279:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const std::error_code&)’
-  279 |     operator<<(basic_ostream<_CharT, _Traits>& __os, const error_code& __e)
+                 from src/main.cpp:3:
+/usr/include/c++/11/system_error:368:3: note: candidate: ‘bool std::operator==(const std::error_code&, const std::error_condition&)’ (reversed)
+  368 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/11/system_error:368:32: note:   no known conversion for argument 1 from ‘const simba::messages::application_layer::BestPricesEntry’ to ‘const std::error_code&’
+  368 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+In file included from /usr/include/c++/11/iosfwd:40,
+                 from /usr/include/c++/11/string_view:40,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/postypes.h:222:5: note: candidate: ‘template<class _StateT> bool std::operator==(const std::fpos<_StateT>&, const std::fpos<_StateT>&)’
+  222 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
       |     ^~~~~~~~
-/usr/include/c++/11/system_error:279:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const std::error_code&’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:513:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, _CharT)’
-  513 |     operator<<(basic_ostream<_CharT, _Traits>& __out, _CharT __c)
+/usr/include/c++/11/bits/postypes.h:222:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::fpos<_StateT>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/bits/stl_algobase.h:64,
+                 from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_pair.h:466:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const std::pair<_T1, _T2>&, const std::pair<_T1, _T2>&)’
+  466 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
       |     ^~~~~~~~
-/usr/include/c++/11/ostream:513:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘std::optional<long int>’)
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:518:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, char)’
-  518 |     operator<<(basic_ostream<_CharT, _Traits>& __out, char __c)
+/usr/include/c++/11/bits/stl_pair.h:466:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::pair<_T1, _T2>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/bits/stl_algobase.h:67,
+                 from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_iterator.h:547:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const std::reverse_iterator<_IteratorL>&, const std::reverse_iterator<_IteratorL>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}’
+  547 |     operator==(const reverse_iterator<_Iterator>& __x,
       |     ^~~~~~~~
-/usr/include/c++/11/ostream:518:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:524:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char)’
-  524 |     operator<<(basic_ostream<char, _Traits>& __out, char __c)
+/usr/include/c++/11/bits/stl_iterator.h:547:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/bits/stl_algobase.h:67,
+                 from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_iterator.h:1648:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorL>&)’
+ 1648 |     operator==(const move_iterator<_Iterator>& __x,
       |     ^~~~~~~~
-/usr/include/c++/11/ostream:524:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:530:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, signed char)’
-  530 |     operator<<(basic_ostream<char, _Traits>& __out, signed char __c)
+/usr/include/c++/11/bits/stl_iterator.h:1648:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::move_iterator<_IteratorL>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from src/main.cpp:2:
+/usr/include/c++/11/string_view:535:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(std::basic_string_view<_CharT, _Traits>, std::basic_string_view<_CharT, _Traits>)’
+  535 |     operator==(basic_string_view<_CharT, _Traits> __x,
       |     ^~~~~~~~
-/usr/include/c++/11/ostream:530:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘signed char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:535:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, unsigned char)’
-  535 |     operator<<(basic_ostream<char, _Traits>& __out, unsigned char __c)
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:535:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘unsigned char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:544:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, wchar_t)’ (deleted)
-  544 |     operator<<(basic_ostream<char, _Traits>&, wchar_t) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:544:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘wchar_t’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:549:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char8_t)’ (deleted)
-  549 |     operator<<(basic_ostream<char, _Traits>&, char8_t) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:549:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘char8_t’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:554:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char16_t)’ (deleted)
-  554 |     operator<<(basic_ostream<char, _Traits>&, char16_t) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:554:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘char16_t’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:558:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, char32_t)’ (deleted)
-  558 |     operator<<(basic_ostream<char, _Traits>&, char32_t) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:558:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘char32_t’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:564:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(std::basic_ostream<wchar_t, _Traits>&, char8_t)’ (deleted)
-  564 |     operator<<(basic_ostream<wchar_t, _Traits>&, char8_t) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:564:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   mismatched types ‘wchar_t’ and ‘char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:569:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(std::basic_ostream<wchar_t, _Traits>&, char16_t)’ (deleted)
-  569 |     operator<<(basic_ostream<wchar_t, _Traits>&, char16_t) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:569:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   mismatched types ‘wchar_t’ and ‘char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:573:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(std::basic_ostream<wchar_t, _Traits>&, char32_t)’ (deleted)
-  573 |     operator<<(basic_ostream<wchar_t, _Traits>&, char32_t) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:573:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   mismatched types ‘wchar_t’ and ‘char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:594:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const _CharT*)’
-  594 |     operator<<(basic_ostream<_CharT, _Traits>& __out, const _CharT* __s)
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:594:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   mismatched types ‘const _CharT*’ and ‘std::optional<long int>’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
-In file included from /usr/include/c++/11/ostream:829,
+/usr/include/c++/11/string_view:535:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘simba::messages::application_layer::BestPricesEntry’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/string:55,
+                 from /usr/include/c++/11/bits/locale_classes.h:40,
+                 from /usr/include/c++/11/bits/ios_base.h:41,
+                 from /usr/include/c++/11/ios:42,
+                 from /usr/include/c++/11/ostream:38,
                  from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/bits/ostream.tcc:321:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(std::basic_ostream<_CharT, _Traits>&, const char*)’
-  321 |     operator<<(basic_ostream<_CharT, _Traits>& __out, const char* __s)
+                 from src/main.cpp:3:
+/usr/include/c++/11/bits/basic_string.h:6226:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>&, const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 6226 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
       |     ^~~~~~~~
-/usr/include/c++/11/bits/ostream.tcc:321:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const char*’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:611:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char*)’
-  611 |     operator<<(basic_ostream<char, _Traits>& __out, const char* __s)
+/usr/include/c++/11/bits/basic_string.h:6226:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/string:55,
+                 from /usr/include/c++/11/bits/locale_classes.h:40,
+                 from /usr/include/c++/11/bits/ios_base.h:41,
+                 from /usr/include/c++/11/ios:42,
+                 from /usr/include/c++/11/ostream:38,
+                 from /usr/include/c++/11/iostream:39,
+                 from src/main.cpp:3:
+/usr/include/c++/11/bits/basic_string.h:6234:5: note: candidate: ‘template<class _CharT> typename __gnu_cxx::__enable_if<std::__is_char<_Tp>::__value, bool>::__type std::operator==(const std::__cxx11::basic_string<_CharT>&, const std::__cxx11::basic_string<_CharT>&)’
+ 6234 |     operator==(const basic_string<_CharT>& __lhs,
       |     ^~~~~~~~
-/usr/include/c++/11/ostream:611:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const char*’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:624:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const signed char*)’
-  624 |     operator<<(basic_ostream<char, _Traits>& __out, const signed char* __s)
+/usr/include/c++/11/bits/basic_string.h:6234:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::__cxx11::basic_string<_CharT>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/bits/locale_facets.h:48,
+                 from /usr/include/c++/11/bits/basic_ios.h:37,
+                 from /usr/include/c++/11/ios:44,
+                 from /usr/include/c++/11/ostream:38,
+                 from /usr/include/c++/11/iostream:39,
+                 from src/main.cpp:3:
+/usr/include/c++/11/bits/streambuf_iterator.h:226:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const std::istreambuf_iterator<_CharT, _Traits>&, const std::istreambuf_iterator<_CharT, _Traits>&)’
+  226 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
       |     ^~~~~~~~
-/usr/include/c++/11/ostream:624:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const signed char*’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:629:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const unsigned char*)’
-  629 |     operator<<(basic_ostream<char, _Traits>& __out, const unsigned char* __s)
+/usr/include/c++/11/bits/streambuf_iterator.h:226:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::istreambuf_iterator<_CharT, _Traits>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/vector:67,
+                 from ./include/schema/bitmasks.h:5,
+                 from ./include/application_layer_messages.h:2,
+                 from src/main.cpp:4:
+/usr/include/c++/11/bits/stl_vector.h:1892:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator==(const std::vector<_Tp, _Alloc>&, const std::vector<_Tp, _Alloc>&)’
+ 1892 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
       |     ^~~~~~~~
-/usr/include/c++/11/ostream:629:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const unsigned char*’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:638:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const wchar_t*)’ (deleted)
-  638 |     operator<<(basic_ostream<char, _Traits>&, const wchar_t*) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:638:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const wchar_t*’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:643:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char8_t*)’ (deleted)
-  643 |     operator<<(basic_ostream<char, _Traits>&, const char8_t*) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:643:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const char8_t*’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:648:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char16_t*)’ (deleted)
-  648 |     operator<<(basic_ostream<char, _Traits>&, const char16_t*) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:648:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const char16_t*’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:652:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(std::basic_ostream<char, _Traits>&, const char32_t*)’ (deleted)
-  652 |     operator<<(basic_ostream<char, _Traits>&, const char32_t*) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:652:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   cannot convert ‘order_exec.simba::messages::application_layer::OrderExecution::MDEntrySize’ (type ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’}) to type ‘const char32_t*’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                ~~~~~~~~~~~^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:658:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(std::basic_ostream<wchar_t, _Traits>&, const char8_t*)’ (deleted)
-  658 |     operator<<(basic_ostream<wchar_t, _Traits>&, const char8_t*) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:658:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   mismatched types ‘wchar_t’ and ‘char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:663:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(std::basic_ostream<wchar_t, _Traits>&, const char16_t*)’ (deleted)
-  663 |     operator<<(basic_ostream<wchar_t, _Traits>&, const char16_t*) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:663:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   mismatched types ‘wchar_t’ and ‘char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:667:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(std::basic_ostream<wchar_t, _Traits>&, const char32_t*)’ (deleted)
-  667 |     operator<<(basic_ostream<wchar_t, _Traits>&, const char32_t*) = delete;
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:667:5: note:   template argument deduction/substitution failed:
-tests/tests.cpp:114:27: note:   mismatched types ‘wchar_t’ and ‘char’
-  114 |   std::cout << order_exec.MDEntrySize;
-      |                           ^~~~~~~~~~~
-In file included from /usr/include/c++/11/iostream:39,
-                 from ./include/schema/structs.h:4,
-                 from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-/usr/include/c++/11/ostream:750:5: note: candidate: ‘template<class _Ostream, class _Tp> _Ostream&& std::operator<<(_Ostream&&, const _Tp&)’
-  750 |     operator<<(_Ostream&& __os, const _Tp& __x)
-      |     ^~~~~~~~
-/usr/include/c++/11/ostream:750:5: note:   template argument deduction/substitution failed:
-/usr/include/c++/11/ostream: In substitution of ‘template<class _Ostream, class _Tp> _Ostream&& std::operator<<(_Ostream&&, const _Tp&) [with _Ostream = std::basic_ostream<char>&; _Tp = std::optional<long int>]’:
-tests/tests.cpp:114:27:   required from here
-/usr/include/c++/11/ostream:750:5: error: template constraint failure for ‘template<class _Os, class _Tp>  requires (__derived_from_ios_base<_Os>) && requires(_Os& __os, const _Tp& __t) {__os << __t;} using __rvalue_stream_insertion_t = _Os&&’
-/usr/include/c++/11/ostream:750:5: note: constraints not satisfied
-/usr/include/c++/11/ostream: In substitution of ‘template<class _Os, class _Tp>  requires (__derived_from_ios_base<_Os>) && requires(_Os& __os, const _Tp& __t) {__os << __t;} using __rvalue_stream_insertion_t = _Os&& [with _Os = std::basic_ostream<char>&; _Tp = std::optional<long int>]’:
-/usr/include/c++/11/ostream:750:5:   required by substitution of ‘template<class _Ostream, class _Tp> _Ostream&& std::operator<<(_Ostream&&, const _Tp&) [with _Ostream = std::basic_ostream<char>&; _Tp = std::optional<long int>]’
-tests/tests.cpp:114:27:   required from here
-/usr/include/c++/11/ostream:717:13:   required for the satisfaction of ‘__derived_from_ios_base<_Os>’ [with _Os = std::basic_ostream<char, std::char_traits<char> >&]
-/usr/include/c++/11/ostream:717:39: note: the expression ‘is_class_v<_Tp> [with _Tp = std::basic_ostream<char, std::char_traits<char> >&]’ evaluated to ‘false’
-  717 |     concept __derived_from_ios_base = is_class_v<_Tp>
-      |                                       ^~~~~~~~~~~~~~~
-In file included from ./include/application_layer_messages.h:3,
-                 from ./include/json_creator.h:2,
-                 from tests/tests.cpp:2:
-./include/schema/enums.h:33:22: note: candidate: ‘std::ostream& simba::schema::enums::operator<<(std::ostream&, simba::schema::enums::MDUpdateAction)’
-   33 | inline std::ostream& operator<<(std::ostream& os, MDUpdateAction update_action){
-      |                      ^~~~~~~~
-./include/schema/enums.h:33:66: note:   no known conversion for argument 2 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘simba::schema::enums::MDUpdateAction’
-   33 | inline std::ostream& operator<<(std::ostream& os, MDUpdateAction update_action){
-      |                                                   ~~~~~~~~~~~~~~~^~~~~~~~~~~~~
-In file included from ./include/tests/tests.h:2,
-                 from tests/tests.cpp:1:
-./include/schema/structs.h:46:22: note: candidate: ‘std::ostream& simba::schema::structs::operator<<(std::ostream&, const simba::schema::structs::MarketDataPacketHeader&)’
-   46 | inline std::ostream &operator<<(std::ostream &os,
-      |                      ^~~~~~~~
-./include/schema/structs.h:47:63: note:   no known conversion for argument 2 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘const simba::schema::structs::MarketDataPacketHeader&’
-   47 |                                 const MarketDataPacketHeader &mdp) {
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-./include/schema/structs.h:54:22: note: candidate: ‘std::ostream& simba::schema::structs::operator<<(std::ostream&, const simba::schema::structs::IncrementalPacketHeader&)’
-   54 | inline std::ostream &operator<<(std::ostream &os,
-      |                      ^~~~~~~~
-./include/schema/structs.h:55:64: note:   no known conversion for argument 2 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘const simba::schema::structs::IncrementalPacketHeader&’
-   55 |                                 const IncrementalPacketHeader &inc) {
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-./include/schema/structs.h:61:22: note: candidate: ‘std::ostream& simba::schema::structs::operator<<(std::ostream&, const simba::schema::structs::SBEHeader&)’
-   61 | inline std::ostream &operator<<(std::ostream &os, const SBEHeader &sbe) {
-      |                      ^~~~~~~~
-./include/schema/structs.h:61:68: note:   no known conversion for argument 2 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘const simba::schema::structs::SBEHeader&’
-   61 | inline std::ostream &operator<<(std::ostream &os, const SBEHeader &sbe) {
-      |                                                   ~~~~~~~~~~~~~~~~~^~~
-./include/schema/structs.h:66:22: note: candidate: ‘std::ostream& simba::schema::structs::operator<<(std::ostream&, const simba::schema::structs::groupSize&)’
-   66 | inline std::ostream &operator<<(std::ostream &os, const groupSize &gs) {
-      |                      ^~~~~~~~
-./include/schema/structs.h:66:68: note:   no known conversion for argument 2 from ‘simba::schema::types::Int64NULL’ {aka ‘std::optional<long int>’} to ‘const simba::schema::structs::groupSize&’
-   66 | inline std::ostream &operator<<(std::ostream &os, const groupSize &gs) {
-      |                                                   ~~~~~~~~~~~~~~~~~^~
-tests/tests.cpp:115:11: warning: unused variable ‘buffer’ [-Wunused-variable]
-  115 |   uint8_t buffer[110]{};
-      |           ^~~~~~
-tests/tests.cpp:116:26: warning: unused variable ‘expected_mdp’ [-Wunused-variable]
-  116 |   MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29315345,
-      |                          ^~~~~~~~~~~~
-tests/tests.cpp:120:27: warning: unused variable ‘expected_inc’ [-Wunused-variable]
-  120 |   IncrementalPacketHeader expected_inc{.TransactTime = 1696935956631021931,
-      |                           ^~~~~~~~~~~~
-tests/tests.cpp:134:18: warning: unused variable ‘expected_order_exec’ [-Wunused-variable]
-  134 |   OrderExecution expected_order_exec{
-      |                  ^~~~~~~~~~~~~~~~~~~
-make: *** [Makefile:11: build/tests] Error 1
+/usr/include/c++/11/bits/stl_vector.h:1892:5: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/11/bits/char_traits.h:39,
+                 from /usr/include/c++/11/string_view:41,
+                 from src/main.cpp:2:
+/usr/include/c++/11/bits/stl_algobase.h:1162:29: note:   ‘const simba::messages::application_layer::BestPricesEntry’ is not derived from ‘const std::vector<_Tp, _Alloc>’
+ 1162 |             if (!(*__first1 == *__first2))
+      |                  ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /usr/include/c++/11/bits/ios_base.h:46,
+                 from /usr/include/c++/11/ios:42,
+                 from /usr/include/c++/11/ostream:38,
+                 from /usr/include/c++/11/iostream:39,
+                 from src/main.cpp:3:
+/usr/include/c++/11/system_error:362:3: note: candidate: ‘bool std::operator==(const std::error_code&, const std::error_code&)’
+  362 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/11/system_error:362:32: note:   no known conversion for argument 1 from ‘const simba::messages::application_layer::BestPricesEntry’ to ‘const std::error_code&’
+  362 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/11/system_error:376:3: note: candidate: ‘bool std::operator==(const std::error_condition&, const std::error_condition&)’
+  376 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/11/system_error:376:37: note:   no known conversion for argument 1 from ‘const simba::messages::application_layer::BestPricesEntry’ to ‘const std::error_condition&’
+  376 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+make: *** [Makefile:8: build/main] Error 1

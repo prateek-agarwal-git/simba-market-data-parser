@@ -37,7 +37,7 @@ struct SBEHeader {
 struct groupSize {
   std::uint16_t blockLength;
   std::uint8_t numInGroup;
-  bool operator==(const SBEHeader &other) const {
+  bool operator==(const groupSize &other) const {
     return std::memcmp((void *)this, (const void *)(&other),
                        sizeof(groupSize)) == 0;
   }

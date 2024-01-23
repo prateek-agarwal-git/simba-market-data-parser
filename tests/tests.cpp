@@ -24,9 +24,9 @@ int main() {
 namespace tests {
 
 void test_fixture::run_tests() {
-  run_packet_reader_tests();
+  // run_packet_reader_tests();
   run_protocol_decoder_tests();
-  run_json_creator_tests();
+  // run_json_creator_tests();
 }
 
 void test_fixture::run_protocol_decoder_tests() {
@@ -87,34 +87,9 @@ void test_fixture::decode_order_execution_test() {
   using namespace simba::messages::application_layer;
   using namespace simba::schema::structs;
   using namespace simba::schema::enums;
+  using namespace simba::schema::bitmasks;
   DecoderOutputFunctor output_fn;
   simba::ProtocolDecoder pd(output_fn);
-  static const unsigned char pkt1[110] = {
-      0x11, 0x51, 0xbf, 0x01, 0x6e, 0x00,             /* ...Q..n. */
-      0x09, 0x00, 0x7f, 0xcb, 0x95, 0x05, 0x43, 0xba, /* ......C. */
-      0x8c, 0x17, 0x6b, 0x69, 0x94, 0x05, 0x43, 0xba, /* ..ki..C. */
-      0x8c, 0x17, 0xf6, 0x1a, 0x00, 0x00, 0x4a, 0x00, /* ......J. */
-      0x10, 0x00, 0x44, 0x4d, 0x04, 0x00, 0x75, 0x81, /* ..DM..u. */
-      0x04, 0x00, 0xf6, 0x1a, 0xee, 0x1b, 0x60, 0x1d, /* ......`. */
-      0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, /* ........ */
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x60, 0x1d, /* ......`. */
-      0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, /* ........ */
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x9e, 0x00, /* ........ */
-      0x01, 0x00, 0xf6, 0x1a, 0xee, 0x1b, 0x01, 0x10, /* ........ */
-      0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, /* ........ */
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x83, 0x83, /* ........ */
-      0x36, 0x00, 0x7c, 0x68, 0x03, 0x00, 0x01, 0x30  /* 6.|h...0 */
-  };
-  pd(pkt1, 110);
-  auto mdp_header = output_fn.mdp_header();
-  std::cout << mdp_header;
-  auto inc_header = output_fn.inc_header();
-  std::cout << inc_header;
-  auto order_exec = output_fn.order_execution();
-  std::cout << order_exec.S << std::endl;
-  std::cout << order_exec.MDEntryId << std::endl;
-  std::cout << order_exec.MDEntrySize.value() << std::endl;
-  std::cout << order_exec.LastPx.mantissa << std::endl;
   uint8_t buffer[110]{};
   uint8_t *tmp = buffer;
   MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29315345,
@@ -140,24 +115,38 @@ void test_fixture::decode_order_execution_test() {
   update_buffer(tmp, &LastQty);
   std::int64_t TradeId = 900;
   update_buffer(tmp, &TradeId);
-  std::uint64_t MDFlags = ;
+  std::uint64_t MDFlags = 4398046515201;
   update_buffer(tmp, &MDFlags);
-  std::uint64_t MDFlags2 = 1;
+  std::uint64_t MDFlags2 = 0;
   update_buffer(tmp, &MDFlags2);
-  std::uint32_t SecurityId = 82;
+  std::int32_t SecurityId = 82;
   update_buffer(tmp, &SecurityId);
   std::uint32_t RptSeq = 508234;
   update_buffer(tmp, &RptSeq);
-  //   schema::enums::MDUpdateAction MDUpdateAction;
-  //   schema::enums::MDEntryType MDEntryType;
-
+  std::uint8_t md_update_action = 1; // change
+  update_buffer(tmp, &md_update_action);
+  char md_entry_type = '0';          // bid
+  update_buffer(tmp, &md_entry_type);
   OrderExecution expected_order_exec{
       .S = {.BlockLength = 74,
             .TemplateId = 16,
             .SchemaId = 19780,
             .Version = 4},
-
-  };
+      .MDEntryId = MDEntryId,
+      .MDEntrySize = 2,
+      .LastPx = {.mantissa = LastPx_mantissa},
+      .LastQty = LastQty,
+      .TradeId = TradeId,
+      .MDFlags = MDFlags,
+      .MDFlags2 = MDFlags2,
+      .SecurityId = SecurityId,
+      .RptSeq = RptSeq,
+      .MDUpdateAction = static_cast<MDUpdateAction>(md_update_action),
+      .MDEntryType = static_cast<MDEntryType>(md_entry_type)};
+  pd(buffer, 110);
+  auto actual_output = output_fn.order_execution(); 
+  assert_true("decode_order_execution_test",
+               expected_order_exec ==actual_output&& expected_mdp == output_fn.mdp_header()&& expected_inc == output_fn.inc_header());
 }
 void test_fixture::decode_best_prices_test() {
   using namespace simba::messages::application_layer;

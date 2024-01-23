@@ -23,6 +23,9 @@ struct Decimal5 {
                                   std::chars_format::fixed, 5);
     return std::string(A, ptr);
   }
+  bool operator ==(const Decimal5 & other) const{
+    return mantissa == other.mantissa;
+  }
 };
 struct Decimal5Null {
   std::optional<std::int64_t> mantissa;
@@ -33,6 +36,9 @@ struct Decimal5Null {
     auto [ptr, _] = std::to_chars(A, A + 32, mantissa.value() * exponent,
                                   std::chars_format::fixed, 5);
     return std::string(A, ptr);
+  }
+  bool operator ==(const Decimal5Null & other) const{
+    return mantissa == other.mantissa;
   }
 };
 
