@@ -35,10 +35,6 @@ struct BestPrices {
   std::vector<BestPricesEntry> Entries;
 };
 
-struct EmptyBook {
-  schema::structs::SBEHeader S;
-  schema::types::uInt32NULL LastMsgSeqNumProcessed;
-};
 
 struct OrderUpdate {
   schema::structs::SBEHeader S;

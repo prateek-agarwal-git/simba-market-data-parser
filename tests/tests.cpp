@@ -9,6 +9,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <unistd.h>
 #include <vector>
 
@@ -89,7 +90,7 @@ void test_fixture::decode_order_execution_test() {
   DecoderOutputFunctor output_fn;
   simba::ProtocolDecoder pd(output_fn);
   static const unsigned char pkt1[110] = {
-       0x11, 0x51, 0xbf, 0x01, 0x6e, 0x00, /* ...Q..n. */
+      0x11, 0x51, 0xbf, 0x01, 0x6e, 0x00,             /* ...Q..n. */
       0x09, 0x00, 0x7f, 0xcb, 0x95, 0x05, 0x43, 0xba, /* ......C. */
       0x8c, 0x17, 0x6b, 0x69, 0x94, 0x05, 0x43, 0xba, /* ..ki..C. */
       0x8c, 0x17, 0xf6, 0x1a, 0x00, 0x00, 0x4a, 0x00, /* ......J. */
@@ -104,21 +105,59 @@ void test_fixture::decode_order_execution_test() {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x83, 0x83, /* ........ */
       0x36, 0x00, 0x7c, 0x68, 0x03, 0x00, 0x01, 0x30  /* 6.|h...0 */
   };
-  pd(pkt1,  110);
-  auto mdp_header= output_fn.mdp_header();
-  std::cout<<mdp_header;
-  auto inc_header= output_fn.inc_header();
-  std::cout<<inc_header;
-  auto expected_order_exec = output_fn.order_execution();
-  std::cout << expected_order_exec.S ;
-  //"BlockLength=74,TemplateId=16,SchemaId=19780,Version=4"
+  pd(pkt1, 110);
+  auto mdp_header = output_fn.mdp_header();
+  std::cout << mdp_header;
+  auto inc_header = output_fn.inc_header();
+  std::cout << inc_header;
+  auto order_exec = output_fn.order_execution();
+  std::cout << order_exec.S << std::endl;
+  std::cout << order_exec.MDEntryId << std::endl;
+  std::cout << order_exec.MDEntrySize.value() << std::endl;
+  std::cout << order_exec.LastPx.mantissa << std::endl;
   uint8_t buffer[110]{};
+  uint8_t *tmp = buffer;
   MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29315345,
                                       .MsgSize = 110,
                                       .MsgFlags = 9,
                                       .SendingTime = 1696935956631112575};
   IncrementalPacketHeader expected_inc{.TransactTime = 1696935956631021931,
                                        .ExchangeTradingSessionId = 6902};
+  SBEHeader expected_S{
+      .BlockLength = 74, .TemplateId = 16, .SchemaId = 19780, .Version = 4};
+  update_buffer(tmp, &expected_mdp);
+  update_buffer(tmp, &expected_inc);
+  update_buffer(tmp, &expected_S);
+  std::int64_t MDEntryId = 2012575727345762677;
+  update_buffer(tmp, &MDEntryId);
+  std::int64_t MDEntryPx = std::numeric_limits<std::int64_t>::max();
+  update_buffer(tmp, &MDEntryPx);
+  std::int64_t MDEntrySize = 2;
+  update_buffer(tmp, &MDEntrySize);
+  std::int64_t LastPx_mantissa = 335200;
+  update_buffer(tmp, &LastPx_mantissa);
+  std::int64_t LastQty = 200;
+  update_buffer(tmp, &LastQty);
+  std::int64_t TradeId = 900;
+  update_buffer(tmp, &TradeId);
+  std::uint64_t MDFlags = ;
+  update_buffer(tmp, &MDFlags);
+  std::uint64_t MDFlags2 = 1;
+  update_buffer(tmp, &MDFlags2);
+  std::uint32_t SecurityId = 82;
+  update_buffer(tmp, &SecurityId);
+  std::uint32_t RptSeq = 508234;
+  update_buffer(tmp, &RptSeq);
+  //   schema::enums::MDUpdateAction MDUpdateAction;
+  //   schema::enums::MDEntryType MDEntryType;
+
+  OrderExecution expected_order_exec{
+      .S = {.BlockLength = 74,
+            .TemplateId = 16,
+            .SchemaId = 19780,
+            .Version = 4},
+
+  };
 }
 void test_fixture::decode_best_prices_test() {
   using namespace simba::messages::application_layer;

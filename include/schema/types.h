@@ -8,8 +8,7 @@
 #include <type_traits>
 
 namespace simba::schema::types {
-using Int64NULL = std::optional<int64_t>;
-using uInt32NULL = std::optional<uint32_t>;
+using Int64NULL = std::optional<std::int64_t>;
 struct NullValues {
   static constexpr int64_t Int64 = std::numeric_limits<int64_t>::max();
 };
@@ -26,7 +25,7 @@ struct Decimal5 {
   }
 };
 struct Decimal5Null {
-  std::optional<int64_t> mantissa;
+  std::optional<std::int64_t> mantissa;
   static constexpr double exponent = 1e-5;
   bool has_value() const { return mantissa.has_value(); }
   std::string to_string() const {
@@ -38,7 +37,7 @@ struct Decimal5Null {
 };
 
 struct Decimal2Null {
-  std::optional<int64_t> mantissa;
+  std::optional<std::int64_t> mantissa;
   static constexpr double exponent = 1e-2;
   bool has_value() const { return mantissa.has_value(); }
 

@@ -43,6 +43,11 @@ private:
   void decode_order_book_snapshot_test();
   void assert_true(const std::string &test_name, bool expression);
 
+  template <typename T> void update_buffer(uint8_t *&buffer, T *val) {
+    std::memcpy(buffer, (void *)val, sizeof(T));
+    buffer += sizeof(T);
+  }
+
   std::ostream &os_;
 };
 

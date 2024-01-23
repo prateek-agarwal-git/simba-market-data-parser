@@ -14,14 +14,6 @@ struct MarketDataPacketHeader {
   }
 } __attribute__((packed));
 
-inline std::ostream &operator<<(std::ostream &os,
-                                const MarketDataPacketHeader &mdp) {
-  os << "MsgSeqNum=" << mdp.MsgSeqNum << ",MsgSize=" << mdp.MsgSize
-     << ",MsgFlags=" << mdp.MsgFlags << ",SendingTime=" << mdp.SendingTime
-     << std::endl;
-  return os;
-}
-
 struct IncrementalPacketHeader {
   std::uint64_t TransactTime;
   std::uint32_t ExchangeTradingSessionId;
@@ -30,13 +22,6 @@ struct IncrementalPacketHeader {
                        sizeof(IncrementalPacketHeader)) == 0;
   }
 } __attribute__((packed));
-
-inline std::ostream &operator<<(std::ostream &os,
-                                const IncrementalPacketHeader &inc) {
-  os << "TransactTime=" << inc.TransactTime
-     << ",ExchangeTradingSessionId=" << inc.ExchangeTradingSessionId;
-  return os;
-}
 
 struct SBEHeader {
   std::uint16_t BlockLength;
@@ -49,12 +34,6 @@ struct SBEHeader {
   }
 } __attribute__((packed));
 
-inline std::ostream &operator<<(std::ostream &os, const SBEHeader &sbe) {
-  os << "BlockLength=" << sbe.BlockLength << ",TemplateId=" << sbe.TemplateId
-     << ",SchemaId=" << sbe.SchemaId << ",Version=" << sbe.Version;
-  return os;
-}
-
 struct groupSize {
   std::uint16_t blockLength;
   std::uint8_t numInGroup;
@@ -63,4 +42,29 @@ struct groupSize {
                        sizeof(groupSize)) == 0;
   }
 } __attribute__((packed));
+
+inline std::ostream &operator<<(std::ostream &os,
+                                const MarketDataPacketHeader &mdp) {
+  os << "MDPHeader:MsgSeqNum=" << mdp.MsgSeqNum << ",MsgSize=" << mdp.MsgSize
+     << ",MsgFlags=" << mdp.MsgFlags << ",SendingTime=" << mdp.SendingTime
+     << std::endl;
+  return os;
+}
+
+inline std::ostream &operator<<(std::ostream &os,
+                                const IncrementalPacketHeader &inc) {
+  os << "IncPacketHeader:TransactTime=" << inc.TransactTime
+     << ",ExchangeTradingSessionId=" << inc.ExchangeTradingSessionId;
+  return os;
+}
+
+inline std::ostream &operator<<(std::ostream &os, const SBEHeader &sbe) {
+  os << "SBEHeader:BlockLength=" << sbe.BlockLength << ",TemplateId=" << sbe.TemplateId
+     << ",SchemaId=" << sbe.SchemaId << ",Version=" << sbe.Version;
+  return os;
+}
+inline std::ostream &operator<<(std::ostream &os, const groupSize &gs) {
+  os << "groupSize:blockLength=" << gs.blockLength << ",numInGroup=" << gs.numInGroup;
+  return os;
+}
 } // namespace simba::schema::structs
