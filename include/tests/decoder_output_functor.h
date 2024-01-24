@@ -40,11 +40,11 @@ struct DecoderOutputFunctor {
   auto order_execution() const {return order_execution_; }
   auto order_book_snapshot() const {return order_book_snapshot_;}
 private:
-  simba::schema::structs::MarketDataPacketHeader mdp_header_;
-  simba::schema::structs::IncrementalPacketHeader inc_header_;
-  simba::messages::application_layer::BestPrices best_prices_;
-  simba::messages::application_layer::OrderUpdate order_update_;
-  simba::messages::application_layer::OrderExecution order_execution_;
-  simba::messages::application_layer::OrderBookSnapShot order_book_snapshot_;
+  simba::schema::structs::MarketDataPacketHeader mdp_header_{};
+  simba::schema::structs::IncrementalPacketHeader inc_header_{};
+  simba::messages::application_layer::BestPrices best_prices_{};
+  simba::messages::application_layer::OrderUpdate order_update_{};
+  simba::messages::application_layer::OrderExecution order_execution_{};
+  simba::messages::application_layer::OrderBookSnapShot order_book_snapshot_{};
 };
 } // namespace tests

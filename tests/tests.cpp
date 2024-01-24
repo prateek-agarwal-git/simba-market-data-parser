@@ -33,30 +33,19 @@ void test_fixture::run_protocol_decoder_tests() {
   decode_order_update_test();
   decode_order_execution_test();
   decode_best_prices_test();
-  //  decode_order_book_snapshot_test();
+  decode_order_book_snapshot_test();
 }
 
 void test_fixture::decode_order_update_test() {
   using namespace simba::messages::application_layer;
   using namespace simba::schema::structs;
   using namespace simba::schema::enums;
-  DecoderOutputFunctor output_fn_;
-  simba::ProtocolDecoder pd(output_fn_);
-  uint8_t buffer[86]{};
   MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29158931,
                                       .MsgSize = 86,
                                       .MsgFlags = 9,
                                       .SendingTime = 1696935540002780516};
-  int offset = 0;
-  std::memcpy(buffer, reinterpret_cast<void *>(&expected_mdp),
-              sizeof(expected_mdp));
-  offset += sizeof(expected_mdp);
   IncrementalPacketHeader expected_inc{.TransactTime = 1696935540002741130,
                                        .ExchangeTradingSessionId = 6902};
-
-  std::memcpy(buffer + offset, reinterpret_cast<void *>(&expected_inc),
-              sizeof(expected_inc));
-  offset += sizeof(expected_inc);
   OrderUpdate expected_order_update{.S = {.BlockLength = 50,
                                           .TemplateId = 15,
                                           .SchemaId = 19780,
@@ -69,11 +58,17 @@ void test_fixture::decode_order_update_test() {
                                     .RptSeq = 5903684,
                                     .MDUpdateAction = MDUpdateAction::Delete,
                                     .MDEntryType = MDEntryType::Bid};
+
+  uint8_t buffer[86]{};
+  uint8_t *tmp = buffer;
+  update_buffer(tmp, expected_mdp);
+  update_buffer(tmp, expected_inc);
   // order_update is POD so far. No std::optionals. This struct is also made
   // packed in application_layer_messages.h
-  std::memcpy(buffer + offset, reinterpret_cast<void *>(&expected_order_update),
-              sizeof(expected_order_update));
+  update_buffer(tmp, expected_order_update);
 
+  DecoderOutputFunctor output_fn_;
+  simba::ProtocolDecoder pd(output_fn_);
   pd(buffer, 86);
   auto output_mdp = output_fn_.mdp_header();
   auto output_inc = output_fn_.inc_header();
@@ -88,10 +83,6 @@ void test_fixture::decode_order_execution_test() {
   using namespace simba::schema::structs;
   using namespace simba::schema::enums;
   using namespace simba::schema::bitmasks;
-  DecoderOutputFunctor output_fn;
-  simba::ProtocolDecoder pd(output_fn);
-  uint8_t buffer[1024]{}; // kept larger than required as an another check
-  uint8_t *tmp = buffer;
   MarketDataPacketHeader expected_mdp{.MsgSeqNum = 29315345,
                                       .MsgSize = 110,
                                       .MsgFlags = 9,
@@ -100,6 +91,9 @@ void test_fixture::decode_order_execution_test() {
                                        .ExchangeTradingSessionId = 6902};
   SBEHeader expected_S{
       .BlockLength = 74, .TemplateId = 16, .SchemaId = 19780, .Version = 4};
+
+  uint8_t buffer[1024]{}; // kept larger than required as an another check
+  uint8_t *tmp = buffer;
   update_buffer(tmp, expected_mdp);
   update_buffer(tmp, expected_inc);
   update_buffer(tmp, expected_S);
@@ -132,9 +126,9 @@ void test_fixture::decode_order_execution_test() {
             .TemplateId = 16,
             .SchemaId = 19780,
             .Version = 4},
-      .MDEntryId = MDEntryId,
+      .MDEntryId = 2012575727345762677,
       .MDEntrySize = 2,
-      .LastPx = {.mantissa = LastPx_mantissa},
+      .LastPx = {.mantissa = 335200},
       .LastQty = LastQty,
       .TradeId = TradeId,
       .MDFlags = MDFlags,
@@ -143,6 +137,8 @@ void test_fixture::decode_order_execution_test() {
       .RptSeq = RptSeq,
       .MDUpdateAction = static_cast<MDUpdateAction>(md_update_action),
       .MDEntryType = static_cast<MDEntryType>(md_entry_type)};
+  DecoderOutputFunctor output_fn;
+  simba::ProtocolDecoder pd(output_fn);
   pd(buffer, 110);
   auto actual_output = output_fn.order_execution();
   assert_true("decode_order_execution_test",
@@ -188,8 +184,8 @@ void test_fixture::decode_best_prices_test() {
                             ? entry.MktBidPx.mantissa.value()
                             : simba::schema::types::NullValues::Int64;
     update_buffer(tmp, bid_mantissa);
-    auto offer_mantissa = entry.MktOfferPx.mantissa.has_value()
-                              ? entry.MktOfferPx.mantissa.value()
+    auto offer_mantissa = entry.MktOfferPx.mantissa
+                              ? *entry.MktOfferPx.mantissa
                               : simba::schema::types::NullValues::Int64;
     update_buffer(tmp, offer_mantissa);
     auto bid_size = entry.MktBidSize.has_value()
@@ -212,8 +208,82 @@ void test_fixture::decode_best_prices_test() {
 }
 
 void test_fixture::decode_order_book_snapshot_test() {
-  DecoderOutputFunctor output_fn_;
-  simba::ProtocolDecoder pd(output_fn_);
+  using namespace simba::messages::application_layer;
+  using namespace simba::schema::structs;
+  using namespace simba::schema::enums;
+  using namespace simba::schema::bitmasks;
+  MarketDataPacketHeader expected_mdp{.MsgSeqNum = 8394,
+                                      .MsgSize = 157,
+                                      .MsgFlags = 6,
+                                      .SendingTime = 1696935540034865348};
+  OrderBookSnapShot expected_order_book_snapshot{
+      .S = {.BlockLength = 16,
+            .TemplateId = 17,
+            .SchemaId = 19780,
+            .Version = 4},
+      .SecurityId = 2863159,
+      .LastMsgSeqNumProcessed = 29151376,
+      .RptSeq = 10,
+      .ExchangeTradingSessionId = 6902,
+      .NoMDEntries = {.blockLength = 57, .numInGroup = 2},
+      .Entries = {
+          {.MDEntryId = 1892948862243438606,
+           .TransactTime = 1696867113204251569,
+           .MDEntryPx = {.mantissa = 86500000},
+           .MDEntrySize = 1,
+           .TradeId = 0,
+           .MDFlags = static_cast<std::uint64_t>(MDFlagsSet::DAY) |
+                      static_cast<std::uint64_t>(MDFlagsSet::EndOfTransaction),
+           .MDFlags2 = static_cast<std::uint64_t>(MDFlags2Set::Zero),
+           .MDEntryType = MDEntryType::Offer},
+          {.TransactTime = 1696935006323394189,
+           .MDEntryPx = {.mantissa = 409100000},
+           .MDFlags = static_cast<std::uint64_t>(MDFlagsSet::DAY) |
+                      static_cast<std::uint64_t>(MDFlagsSet::EndOfTransaction) |
+                      static_cast<std::uint64_t>(MDFlagsSet::Replace),
+           .MDFlags2 = static_cast<std::uint64_t>(MDFlags2Set::Zero),
+           .MDEntryType = MDEntryType::Offer}}};
+
+  uint8_t buffer[157]{};
+  uint8_t *tmp = buffer;
+  update_buffer(tmp, expected_mdp);
+  update_buffer(tmp, expected_order_book_snapshot.S);
+  update_buffer(tmp, expected_order_book_snapshot.SecurityId);
+  update_buffer(tmp, expected_order_book_snapshot.LastMsgSeqNumProcessed);
+  update_buffer(tmp, expected_order_book_snapshot.RptSeq);
+  update_buffer(tmp, expected_order_book_snapshot.ExchangeTradingSessionId);
+  update_buffer(tmp, expected_order_book_snapshot.NoMDEntries);
+
+  for (const auto &snapshot : expected_order_book_snapshot.Entries) {
+    auto md_entry_id = snapshot.MDEntryId
+                           ? *snapshot.MDEntryId
+                           : simba::schema::types::NullValues::Int64;
+    update_buffer(tmp, md_entry_id);
+    update_buffer(tmp, snapshot.TransactTime);
+    auto px_mantissa = snapshot.MDEntryPx.mantissa
+                           ? *snapshot.MDEntryPx.mantissa
+                           : simba::schema::types::NullValues::Int64;
+    update_buffer(tmp, px_mantissa);
+    auto md_entry_size = snapshot.MDEntrySize
+                             ? *snapshot.MDEntrySize
+                             : simba::schema::types::NullValues::Int64;
+    update_buffer(tmp, md_entry_size);
+    auto trade_id = snapshot.TradeId ? *snapshot.TradeId
+                                     : simba::schema::types::NullValues::Int64;
+    update_buffer(tmp, trade_id);
+    update_buffer(tmp, snapshot.MDFlags);
+    update_buffer(tmp, snapshot.MDFlags2);
+    char md_entry_type = static_cast<char>(snapshot.MDEntryType);
+    update_buffer(tmp, md_entry_type);
+  }
+
+  DecoderOutputFunctor output_fn;
+  simba::ProtocolDecoder pd(output_fn);
+  pd(buffer, 157);
+  assert_true("decode_order_book_snapshot_test",
+              expected_mdp == output_fn.mdp_header() &&
+                  expected_order_book_snapshot ==
+                      output_fn.order_book_snapshot());
 }
 
 void test_fixture::run_packet_reader_tests() {

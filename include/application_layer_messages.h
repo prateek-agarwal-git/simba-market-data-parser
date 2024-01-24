@@ -52,7 +52,8 @@ struct OrderUpdate {
     return std::memcmp((const void *)this, (const void *)(&other),
                        sizeof(OrderUpdate)) == 0;
   }
-} __attribute__((packed)); // 58 bytes
+} __attribute__((packed)); // 58 bytes kept packed for ease of use and all the
+                           // members are trivially copyable
 
 // same struct for full or partial execution as well as on calendar spreads.
 // The / difference is in the values of respective fields.
@@ -91,10 +92,10 @@ struct SnapShotEntry {
   std::uint64_t MDFlags2;
   schema::enums::MDEntryType MDEntryType;
   bool operator==(const SnapShotEntry &other) const {
-    return MDEntryId == other.MDEntryId && MDEntryPx == other.MDEntryPx &&
-           MDEntrySize == other.MDEntrySize && TradeId == other.TradeId &&
-           MDFlags == other.MDFlags && MDFlags2 == other.MDFlags2 &&
-           MDEntryType == other.MDEntryType;
+    return MDEntryId == other.MDEntryId && TransactTime == other.TransactTime &&
+           MDEntryPx == other.MDEntryPx && MDEntrySize == other.MDEntrySize &&
+           TradeId == other.TradeId && MDFlags == other.MDFlags &&
+           MDFlags2 == other.MDFlags2 && MDEntryType == other.MDEntryType;
   }
 };
 
@@ -116,7 +117,7 @@ struct OrderBookSnapShot {
   }
 };
 inline std::ostream &operator<<(std::ostream &os, const BestPricesEntry &bpe) {
-  os<< "BestPricesEntry: ";
+  os << "BestPricesEntry: ";
   if (bpe.MktBidPx.has_value()) {
     os << "MktBidPx=" << bpe.MktBidPx.to_string();
   }
@@ -129,15 +130,54 @@ inline std::ostream &operator<<(std::ostream &os, const BestPricesEntry &bpe) {
   if (bpe.MktOfferSize.has_value()) {
     os << "MktOfferSize=" << *bpe.MktOfferSize;
   }
-  os<< "SecurityId=" << bpe.SecurityId;
+  os << "SecurityId=" << bpe.SecurityId;
   return os;
 }
 
+inline std::ostream &operator<<(std::ostream &os, const BestPrices &bp) {
+  os << "BestPrices: " << bp.S << "," << bp.NoMDEntries;
+  for (const auto &entry : bp.Entries) {
+    os << entry;
+  }
+  return os;
+}
 
-inline std::ostream & operator<<( std::ostream& os,const BestPrices & bp ){
-  os<<"BestPrices: " <<  bp.S<<"," <<bp.NoMDEntries;
-  for(const auto& entry: bp.Entries){
-    os<<entry;
+inline std::ostream &operator<<(std::ostream &os, const SnapShotEntry &s) {
+  os << "SnapshotEntry: ";
+  if (s.MDEntryId.has_value()) {
+    os << "MDEntryId=" << s.MDEntryId.value();
+  }
+  os << ",TransactTime=" << s.TransactTime;
+  if (s.MDEntryPx.has_value()) {
+    os << ",MDEntryPx=" << s.MDEntryPx.to_string();
+  }
+  if (s.MDEntrySize.has_value()) {
+    os << ",MDEntrySize=" << s.MDEntrySize.value();
+  }
+  if (s.TradeId.has_value()) {
+    os << ",TradeId=" << s.TradeId.value();
+  }
+  os << ",MDFlags="
+     << simba::schema::bitmasks::to_string<schema::bitmasks::MDFlagsSet>(
+            s.MDFlags);
+  os << ",MDFlags2="
+     << simba::schema::bitmasks::to_string<schema::bitmasks::MDFlags2Set>(
+            s.MDFlags);
+  os << ",MDEntryType=" << schema::enums::to_string(s.MDEntryType);
+  return os;
+}
+
+inline std::ostream &operator<<(std::ostream &os,
+                                const OrderBookSnapShot &obs) {
+  os << "OrderBookSnapshot: ";
+  os << obs.S;
+  os << ",SecurityId=" << obs.SecurityId;
+  os << ",LastMsgSeqNumProcessed=" << obs.LastMsgSeqNumProcessed;
+  os << ",RptSeq=" << obs.RptSeq;
+  os << ",ExchangeTradingSessionId=" << obs.ExchangeTradingSessionId;
+  os << ",NoMDEntries=" << obs.NoMDEntries;
+  for (const auto &entry : obs.Entries) {
+    os << entry;
   }
   return os;
 }
