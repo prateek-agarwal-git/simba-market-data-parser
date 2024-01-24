@@ -142,6 +142,53 @@ inline std::ostream &operator<<(std::ostream &os, const BestPrices &bp) {
   return os;
 }
 
+inline std::ostream &operator<<(std::ostream &os,
+                                const OrderUpdate &order_update) {
+  os << "OrderUpdate: ";
+  os << order_update.S;
+  os << ",MDEntryId=" << order_update.MDEntryId;
+  os << ",MDEntryPx=" << order_update.MDEntryPx.to_string();
+  os << ",MDEntrySize=" << order_update.MDEntrySize;
+  os << ",MDEntryFlags="
+     << schema::bitmasks::to_string<schema::bitmasks::MDFlagsSet>(
+            order_update.MDFlags);
+  os << ",MDEntryFlags2="
+     << schema::bitmasks::to_string<schema::bitmasks::MDFlags2Set>(
+            order_update.MDFlags2);
+  os << ",SecurityId=" << order_update.SecurityId;
+  os << ",RptSeq=" << order_update.RptSeq;
+  os << ",MDUpdateAction=" << to_string(order_update.MDUpdateAction);
+  os << ",MDEntryType=" << to_string(order_update.MDEntryType);
+  return os;
+}
+inline std::ostream &operator<<(std::ostream &os,
+                                const OrderExecution &order_execution) {
+  os << "OrderExecution: ";
+  os << order_execution.S;
+  os << ",MDEntryId=" << order_execution.MDEntryId;
+  if (order_execution.MDEntryPx.has_value()) {
+    os << ",MDEntryPx=" << order_execution.MDEntryPx.to_string();
+  }
+  if (order_execution.MDEntrySize.has_value()) {
+    os << ",MDEntrySize=" << order_execution.MDEntrySize.value();
+  }
+  os << ",LastPx=" << order_execution.LastPx.to_string();
+  os << ",LastQty=" << order_execution.LastQty;
+  os << ",TradeId=" << order_execution.TradeId;
+
+  os << ",MDEntryFlags="
+     << schema::bitmasks::to_string<schema::bitmasks::MDFlagsSet>(
+            order_execution.MDFlags);
+  os << ",MDEntryFlags2="
+     << schema::bitmasks::to_string<schema::bitmasks::MDFlags2Set>(
+            order_execution.MDFlags2);
+  os << ",SecurityId=" << order_execution.SecurityId;
+  os << ",RptSeq=" << order_execution.RptSeq;
+  os << ",MDUpdateAction=" << to_string(order_execution.MDUpdateAction);
+  os << ",MDEntryType=" << to_string(order_execution.MDEntryType);
+  return os;
+}
+
 inline std::ostream &operator<<(std::ostream &os, const SnapShotEntry &s) {
   os << "SnapshotEntry: ";
   if (s.MDEntryId.has_value()) {

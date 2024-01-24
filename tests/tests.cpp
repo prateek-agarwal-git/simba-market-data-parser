@@ -4,6 +4,7 @@
 #include "protocol_decoder.h"
 #include "schema/bitmasks.h"
 #include "schema/structs.h"
+#include "stream_writer.h"
 #include "tests/decoder_output_functor.h"
 #include <cassert>
 #include <cstring>
@@ -27,6 +28,7 @@ void test_fixture::run_tests() {
   run_packet_reader_tests();
   run_protocol_decoder_tests();
   run_json_creator_tests();
+  run_basic_stream_writer_test();
 }
 
 void test_fixture::run_protocol_decoder_tests() {
@@ -36,6 +38,15 @@ void test_fixture::run_protocol_decoder_tests() {
   decode_order_book_snapshot_test();
 }
 
+void test_fixture::run_basic_stream_writer_test() {
+  std::stringstream ss;
+  std::string expected_output = "Hello world\n";
+  writer::StreamWriter<decltype(ss)> sw (ss);
+  sw(expected_output);
+  assert_true("run_basic_stream_writer_test", expected_output == ss.str());
+
+
+}
 void test_fixture::decode_order_update_test() {
   using namespace simba::messages::application_layer;
   using namespace simba::schema::structs;
@@ -89,60 +100,47 @@ void test_fixture::decode_order_execution_test() {
                                       .SendingTime = 1696935956631112575};
   IncrementalPacketHeader expected_inc{.TransactTime = 1696935956631021931,
                                        .ExchangeTradingSessionId = 6902};
-  SBEHeader expected_S{
-      .BlockLength = 74, .TemplateId = 16, .SchemaId = 19780, .Version = 4};
+  OrderExecution expected_order_exec{.S = {.BlockLength = 74,
+                                           .TemplateId = 16,
+                                           .SchemaId = 19780,
+                                           .Version = 4},
+                                     .MDEntryId = 2012575727345762677,
+                                     .MDEntrySize = 2,
+                                     .LastPx = {.mantissa = 335200},
+                                     .LastQty = 200,
+                                     .TradeId = 900,
+                                     .MDFlags = 4398046515201,
+                                     .MDFlags2 = 0,
+                                     .SecurityId = 82,
+                                     .RptSeq = 508234,
+                                     .MDUpdateAction = MDUpdateAction::Change,
+                                     .MDEntryType = MDEntryType::Bid};
 
   uint8_t buffer[1024]{}; // kept larger than required as an another check
   uint8_t *tmp = buffer;
   update_buffer(tmp, expected_mdp);
   update_buffer(tmp, expected_inc);
-  update_buffer(tmp, expected_S);
-  std::int64_t MDEntryId = 2012575727345762677;
-  update_buffer(tmp, MDEntryId);
-  std::int64_t MDEntryPx = std::numeric_limits<std::int64_t>::max();
-  update_buffer(tmp, MDEntryPx);
-  std::int64_t MDEntrySize = 2;
-  update_buffer(tmp, MDEntrySize);
-  std::int64_t LastPx_mantissa = 335200;
-  update_buffer(tmp, LastPx_mantissa);
-  std::int64_t LastQty = 200;
-  update_buffer(tmp, LastQty);
-  std::int64_t TradeId = 900;
-  update_buffer(tmp, TradeId);
-  std::uint64_t MDFlags = 4398046515201;
-  update_buffer(tmp, MDFlags);
-  std::uint64_t MDFlags2 = 0;
-  update_buffer(tmp, MDFlags2);
-  std::int32_t SecurityId = 82;
-  update_buffer(tmp, SecurityId);
-  std::uint32_t RptSeq = 508234;
-  update_buffer(tmp, RptSeq);
-  std::uint8_t md_update_action = 1; // change
-  update_buffer(tmp, md_update_action);
-  char md_entry_type = '0'; // bid
-  update_buffer(tmp, md_entry_type);
-  OrderExecution expected_order_exec{
-      .S = {.BlockLength = 74,
-            .TemplateId = 16,
-            .SchemaId = 19780,
-            .Version = 4},
-      .MDEntryId = 2012575727345762677,
-      .MDEntrySize = 2,
-      .LastPx = {.mantissa = 335200},
-      .LastQty = LastQty,
-      .TradeId = TradeId,
-      .MDFlags = MDFlags,
-      .MDFlags2 = MDFlags2,
-      .SecurityId = SecurityId,
-      .RptSeq = RptSeq,
-      .MDUpdateAction = static_cast<MDUpdateAction>(md_update_action),
-      .MDEntryType = static_cast<MDEntryType>(md_entry_type)};
+  update_buffer(tmp, expected_order_exec.S);
+  update_buffer(tmp, expected_order_exec.MDEntryId);
+  auto md_entry_px = expected_order_exec.MDEntryPx.mantissa.has_value()
+                         ? expected_order_exec.MDEntryPx.mantissa.value()
+                         : simba::schema::types::NullValues::Int64;
+  update_buffer(tmp, md_entry_px);
+  update_buffer(tmp, *expected_order_exec.MDEntrySize);
+  update_buffer(tmp, expected_order_exec.LastPx.mantissa);
+  update_buffer(tmp, expected_order_exec.LastQty);
+  update_buffer(tmp, expected_order_exec.TradeId);
+  update_buffer(tmp, expected_order_exec.MDFlags);
+  update_buffer(tmp, expected_order_exec.MDFlags2);
+  update_buffer(tmp, expected_order_exec.SecurityId);
+  update_buffer(tmp, expected_order_exec.RptSeq);
+  update_buffer(tmp, expected_order_exec.MDUpdateAction);
+  update_buffer(tmp, expected_order_exec.MDEntryType);
   DecoderOutputFunctor output_fn;
   simba::ProtocolDecoder pd(output_fn);
   pd(buffer, 110);
-  auto actual_output = output_fn.order_execution();
   assert_true("decode_order_execution_test",
-              expected_order_exec == actual_output &&
+              expected_order_exec == output_fn.order_execution() &&
                   expected_mdp == output_fn.mdp_header() &&
                   expected_inc == output_fn.inc_header());
 }

@@ -25,6 +25,8 @@ private:
   void run_json_creator_tests();
   void run_packet_reader_tests();
   void run_protocol_decoder_tests();
+  void run_stream_writer_tests();
+  void run_basic_stream_writer_test();
   void packet_reader_1();
   void packet_reader_2();
   void packet_reader_3();
