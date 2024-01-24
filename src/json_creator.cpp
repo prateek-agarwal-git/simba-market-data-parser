@@ -3,6 +3,7 @@
 #include <sstream>
 namespace simba {
 JsonCreator::JsonCreator(WriterCallback &&cb) : cb_(std::move(cb)) {
+  // reserved some memory for avoiding initial reallocations.
   current_json_string_.reserve(2048);
 }
 
@@ -71,7 +72,6 @@ void JsonCreator::operator()(
       add_enum_record("MDUpdateAction", order_update.MDUpdateAction);
   current_json_string_ +=
       add_enum_record("MDEntryType", order_update.MDEntryType, true);
-
   end_main_element();
 }
 void JsonCreator::operator()(
@@ -169,7 +169,8 @@ void JsonCreator::add_element(
       "MDFlags", entry.MDFlags);
   current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>(
       "MDFlags2", entry.MDFlags2);
-  current_json_string_ += add_enum_record("MDEntryType", entry.MDEntryType,true);
+  current_json_string_ +=
+      add_enum_record("MDEntryType", entry.MDEntryType, true);
   current_json_string_ += end_brace;
 }
 

@@ -1,4 +1,15 @@
 # Simba-Market-Data-Parser
+
+## Build
+Makefile is provided for compiling two binaries ```market_data_parser``` and ```mdp_tests```. Makefile is provided for portability reasons. A build system generator like ```CMake``` may be preferred in real production systems. ```$ make``` on commandline will build both the targets.
+
+## Usage
+
+1. 
+
+
+2. ```mdp_tests``` 
+Example Usage: ```./mdp_tests```
 //
 //## Build
 //

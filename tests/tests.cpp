@@ -79,7 +79,7 @@ void test_fixture::decode_order_update_test() {
   update_buffer(tmp, expected_order_update);
 
   DecoderOutputFunctor output_fn_;
-  simba::ProtocolDecoder pd(output_fn_);
+  simba::ProtocolDecoder pd(output_fn_,os_);
   pd(buffer, 86);
   auto output_mdp = output_fn_.mdp_header();
   auto output_inc = output_fn_.inc_header();
@@ -137,7 +137,7 @@ void test_fixture::decode_order_execution_test() {
   update_buffer(tmp, expected_order_exec.MDUpdateAction);
   update_buffer(tmp, expected_order_exec.MDEntryType);
   DecoderOutputFunctor output_fn;
-  simba::ProtocolDecoder pd(output_fn);
+  simba::ProtocolDecoder pd(output_fn,os_);
   pd(buffer, 110);
   assert_true("decode_order_execution_test",
               expected_order_exec == output_fn.order_execution() &&
@@ -198,7 +198,7 @@ void test_fixture::decode_best_prices_test() {
   }
 
   DecoderOutputFunctor output_fn;
-  simba::ProtocolDecoder pd(output_fn);
+  simba::ProtocolDecoder pd(output_fn,os_);
   pd(buffer, 111);
   assert_true("decoder_best_prices_test",
               expected_mdp == output_fn.mdp_header() &&
@@ -276,7 +276,7 @@ void test_fixture::decode_order_book_snapshot_test() {
   }
 
   DecoderOutputFunctor output_fn;
-  simba::ProtocolDecoder pd(output_fn);
+  simba::ProtocolDecoder pd(output_fn, os_);
   pd(buffer, 157);
   assert_true("decode_order_book_snapshot_test",
               expected_mdp == output_fn.mdp_header() &&
@@ -348,7 +348,7 @@ void test_fixture::packet_reader_1() {
     output_length = payload_length;
   };
 
-  reader::PcapReader pcap_reader(std::move(cb));
+  reader::PcapReader pcap_reader(std::move(cb), os_);
   pcap_reader.read_packets(current_directory_path +
                            "tests/test_pcaps/order_update.pcap");
   assert_true("packet_reader_num_packets_test_1",
@@ -365,7 +365,7 @@ void test_fixture::packet_reader_2() {
     output_lengths.push_back(payload_length);
   };
 
-  reader::PcapReader pcap_reader(std::move(cb));
+  reader::PcapReader pcap_reader(std::move(cb), os_);
   pcap_reader.read_packets(current_directory_path +
                            "tests/test_pcaps/long_snapshot.pcap");
   assert_true("packet_reader_num_packets_test_2",
@@ -381,7 +381,7 @@ void test_fixture::packet_reader_3() {
     output_lengths.push_back(payload_length);
   };
 
-  reader::PcapReader pcap_reader(std::move(cb));
+  reader::PcapReader pcap_reader(std::move(cb), os_);
   pcap_reader.read_packets(current_directory_path +
                            "tests/test_pcaps/next_best_prices.pcap");
   assert_true("packet_reader_num_packets_test_3",
@@ -396,7 +396,7 @@ void test_fixture::packet_reader_4() {
     output_length = payload_length;
   };
 
-  reader::PcapReader pcap_reader(std::move(cb));
+  reader::PcapReader pcap_reader(std::move(cb), os_);
   pcap_reader.read_packets(current_directory_path +
                            "tests/test_pcaps/order_execution.pcap");
   assert_true("packet_reader_num_packets_test_4",
@@ -410,7 +410,7 @@ void test_fixture::packet_reader_5() {
     ++count;
     output_length = payload_length;
   };
-  reader::PcapReader pcap_reader(std::move(cb));
+  reader::PcapReader pcap_reader(std::move(cb), os_);
   pcap_reader.read_packets(
       current_directory_path +
       "tests/test_pcaps/snapshot_end_and_start_within_same_packet.pcap");

@@ -7,7 +7,6 @@ template <typename Stream> struct StreamWriter {
   void operator()(const std::string& output){
     stream_<<output;
   }
-
 private:
   Stream &stream_;
 };

@@ -4,8 +4,9 @@
 #include <string>
 namespace reader {
 struct PcapReader {
-  using DecoderCb = std::function<void(const std::uint8_t *, int payload_length)>;
-  PcapReader(DecoderCb &&cb);
+  using DecoderCb =
+      std::function<void(const std::uint8_t *, int payload_length)>;
+  PcapReader(DecoderCb &&cb, std::ostream& log_os);
   void read_packets(const std::string &file_path);
 
 private:
@@ -15,5 +16,6 @@ private:
   DecoderCb cb_;
   uint8_t
       read_buffer_[n_maximum_transmission_unit]; // sufficient for a UDP payload
+  std::ostream &l_;
 };
 } // namespace reader
