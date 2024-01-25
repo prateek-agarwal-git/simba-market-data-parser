@@ -34,9 +34,7 @@ parse_commandline(int argc, char **argv) {
       break;
     }
   }
-  if (inpcap_file.empty()){
-    std::cout <<"inpcap_file is a compulsory argument." << std::endl;
-  }
+  
   return {inpcap_file, out_file, logfile_path};
 }
 } // namespace commandline

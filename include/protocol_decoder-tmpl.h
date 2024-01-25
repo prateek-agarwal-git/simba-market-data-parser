@@ -117,7 +117,7 @@ ProtocolDecoder<OutputFunctor, LogStream>::decode_incremental_packet(
 }
 
 template <typename OutputFunctor, typename LogStream>
-inline size_t ProtocolDecoder<OutputFunctor, LogStream>::process_order_update(
+inline std::size_t ProtocolDecoder<OutputFunctor, LogStream>::process_order_update(
     std::basic_string_view<std::uint8_t> buffer_sv) {
 
   auto buffer = buffer_sv.data();
@@ -142,7 +142,7 @@ inline size_t ProtocolDecoder<OutputFunctor, LogStream>::process_order_update(
 }
 
 template <typename OutputFunctor, typename LogStream>
-inline size_t
+inline std::size_t
 ProtocolDecoder<OutputFunctor, LogStream>::process_order_execution(
     std::basic_string_view<std::uint8_t> buffer_sv) {
 
@@ -178,7 +178,7 @@ ProtocolDecoder<OutputFunctor, LogStream>::process_order_execution(
 }
 
 template <typename OutputFunctor, typename LogStream>
-inline size_t ProtocolDecoder<OutputFunctor, LogStream>::process_best_prices(
+inline std::size_t ProtocolDecoder<OutputFunctor, LogStream>::process_best_prices(
     std::basic_string_view<std::uint8_t> buffer_sv) {
   auto buffer = buffer_sv.data();
 
@@ -199,7 +199,7 @@ inline size_t ProtocolDecoder<OutputFunctor, LogStream>::process_best_prices(
   }
 
   output_(best_prices);
-  size_t total_bytes_processed =
+  std::size_t total_bytes_processed =
       sizeof(BestPrices::NoMDEntries) + sizeof(BestPrices::S) +
       best_prices.NoMDEntries.blockLength * best_prices.NoMDEntries.numInGroup;
   return total_bytes_processed;

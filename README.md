@@ -8,11 +8,11 @@ Tested compilation with g++ 11.4.0. C++20 features used.
 ## Usage
 
 1. ```market_data_parser```
-Usage:./market_data_parser --out_file=response.json --inpcap_file=infile.pcap --logfile_path=log.txtR
+Usage: ```./market_data_parser --out_file=response.json --inpcap_file=infile.pcap --logfile_path=log.txt```
 inpcap_file is a compulsory argument. The default output file is response.json. The default logfile path is log.txt.
 
 2. ```mdp_tests```
-Example Usage: ```./mdp_tests```
+Example Usage: ```./mdp_tests``` 
 
 ## Components
 

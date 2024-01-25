@@ -24,9 +24,9 @@ int main(int argc, char **argv) {
   }
 
   std::ofstream output_ofs(outfile_path, std::ios::out);
-  std::ofstream log_ofs(logfile_path, std::ios::out);
   writer::StreamWriter W(output_ofs.is_open() ? output_ofs : std::cout);
   simba::JsonCreator J(W);
+  std::ofstream log_ofs(logfile_path, std::ios::out);
   simba::ProtocolDecoder PD(J, log_ofs);
   reader::PcapReader Reader(PD, log_ofs);
   Reader.read_packets(inpcap_file);
