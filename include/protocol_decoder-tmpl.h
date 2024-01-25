@@ -94,13 +94,16 @@ ProtocolDecoder<OutputFunctor, LogStream>::decode_incremental_packet(
     switch (static_cast<MessageTypes>(sbe_header->TemplateId)) {
     case MessageTypes::BestPrices: {
       assert(sbe_header->BlockLength == 0);
-      bytes_processed += process_best_prices(buffer + bytes_processed);
+      bytes_processed += process_best_prices(
+          {buffer + bytes_processed, buffer_sv.size() - bytes_processed});
     } break;
     case MessageTypes::OrderUpdate: {
-      bytes_processed += process_order_update(buffer + bytes_processed);
+      bytes_processed += process_order_update(
+          {buffer + bytes_processed, buffer_sv.size() - bytes_processed});
     } break;
     case MessageTypes::OrderExecution: {
-      bytes_processed += process_order_execution(buffer + bytes_processed);
+      bytes_processed += process_order_execution(
+          {buffer + bytes_processed, buffer_sv.size() - bytes_processed});
     } break;
     default: {
       // do not parse it, yet increment the processed bytes
@@ -108,12 +111,16 @@ ProtocolDecoder<OutputFunctor, LogStream>::decode_incremental_packet(
           sizeof(schema::structs::SBEHeader) + sbe_header->BlockLength;
     }
     }
+
   }
+    output_(tag_structs::end_packet{});
 }
 
 template <typename OutputFunctor, typename LogStream>
 inline size_t ProtocolDecoder<OutputFunctor, LogStream>::process_order_update(
-    const std::uint8_t *buffer) {
+    std::basic_string_view<std::uint8_t> buffer_sv) {
+
+  auto buffer = buffer_sv.data();
   using namespace messages::application_layer;
   OrderUpdate order_update{
       .S = get_value<decltype(OrderUpdate::S)>(buffer),
@@ -131,14 +138,15 @@ inline size_t ProtocolDecoder<OutputFunctor, LogStream>::process_order_update(
       .MDEntryType = get_value<decltype(OrderUpdate::MDEntryType)>(buffer),
   };
   output_(order_update);
-  output_(tag_structs::end_packet{});
   return sizeof(order_update.S) + order_update.S.BlockLength;
 }
 
 template <typename OutputFunctor, typename LogStream>
 inline size_t
 ProtocolDecoder<OutputFunctor, LogStream>::process_order_execution(
-    const std::uint8_t *buffer) {
+    std::basic_string_view<std::uint8_t> buffer_sv) {
+
+  auto buffer = buffer_sv.data();
   using namespace messages::application_layer;
   OrderExecution order_execution{
       .S = get_value<decltype(OrderExecution::S)>(buffer),
@@ -166,13 +174,13 @@ ProtocolDecoder<OutputFunctor, LogStream>::process_order_execution(
       get_value<decltype(OrderExecution::MDEntryType)>(buffer);
 
   output_(order_execution);
-  output_(tag_structs::end_packet{});
   return sizeof(order_execution.S) + order_execution.S.BlockLength;
 }
 
 template <typename OutputFunctor, typename LogStream>
 inline size_t ProtocolDecoder<OutputFunctor, LogStream>::process_best_prices(
-    const std::uint8_t *buffer) {
+    std::basic_string_view<std::uint8_t> buffer_sv) {
+  auto buffer = buffer_sv.data();
 
   using namespace messages::application_layer;
   BestPrices best_prices{
@@ -191,7 +199,6 @@ inline size_t ProtocolDecoder<OutputFunctor, LogStream>::process_best_prices(
   }
 
   output_(best_prices);
-  output_(tag_structs::end_packet{});
   size_t total_bytes_processed =
       sizeof(BestPrices::NoMDEntries) + sizeof(BestPrices::S) +
       best_prices.NoMDEntries.blockLength * best_prices.NoMDEntries.numInGroup;

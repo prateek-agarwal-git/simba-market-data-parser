@@ -8,7 +8,6 @@
 #include <type_traits>
 
 namespace simba::schema::types {
-using Int64NULL = std::optional<std::int64_t>;
 struct NullValues {
   static constexpr int64_t Int64 = std::numeric_limits<int64_t>::max();
 };

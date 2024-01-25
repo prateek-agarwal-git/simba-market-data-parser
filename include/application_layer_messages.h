@@ -5,6 +5,7 @@
 #include "schema/types.h"
 #include <cstdint>
 #include <iostream>
+#include <optional>
 #include <vector>
 
 namespace simba::messages::application_layer {
@@ -12,14 +13,14 @@ enum class MessageTypes : std::uint16_t {
   BestPrices = 14,
   OrderUpdate = 15,
   OrderExecution = 16,
-  OrderBookSnapShot = 17,
+  OrderBookSnapShot = 17
 };
 
 struct BestPricesEntry {
   schema::types::Decimal5Null MktBidPx;
   schema::types::Decimal5Null MktOfferPx;
-  schema::types::Int64NULL MktBidSize;
-  schema::types::Int64NULL MktOfferSize;
+  std::optional<std::int64_t> MktBidSize;
+  std::optional<std::int64_t> MktOfferSize;
   std::int32_t SecurityId;
   bool operator==(const BestPricesEntry &other) const {
     return MktBidPx == other.MktBidPx && MktOfferPx == other.MktOfferPx &&
@@ -61,7 +62,7 @@ struct OrderExecution {
   schema::structs::SBEHeader S;
   std::int64_t MDEntryId;
   schema::types::Decimal5Null MDEntryPx;
-  schema::types::Int64NULL MDEntrySize;
+  std::optional<std::int64_t> MDEntrySize;
   schema::types::Decimal5 LastPx;
   std::int64_t LastQty;
   std::int64_t TradeId;
@@ -83,11 +84,11 @@ struct OrderExecution {
 };
 
 struct SnapShotEntry {
-  schema::types::Int64NULL MDEntryId;
+  std::optional<std::int64_t> MDEntryId;
   std::uint64_t TransactTime;
   schema::types::Decimal5Null MDEntryPx;
-  schema::types::Int64NULL MDEntrySize;
-  schema::types::Int64NULL TradeId;
+  std::optional<std::int64_t> MDEntrySize;
+  std::optional<std::int64_t> TradeId;
   std::uint64_t MDFlags;
   std::uint64_t MDFlags2;
   schema::enums::MDEntryType MDEntryType;

@@ -32,9 +32,9 @@ private:
   void decode_incremental_packet(std::basic_string_view<std::uint8_t> buffer);
   void decode_snapshot_packet(std::basic_string_view<std::uint8_t> buffer);
 
-  std::size_t process_best_prices(const uint8_t *buffer);
-  std::size_t process_order_update(const uint8_t *buffer);
-  std::size_t process_order_execution(const uint8_t *buffer);
+  std::size_t process_best_prices(std::basic_string_view<std::uint8_t> buffer);
+  std::size_t process_order_update(std::basic_string_view<std::uint8_t> buffer);
+  std::size_t process_order_execution(std::basic_string_view<std::uint8_t> buffer);
   // made this a reference so that it can be accessed later for testing
   // purposes. See tests/decoder_output_functor.h
   OutputFunctor &output_;
