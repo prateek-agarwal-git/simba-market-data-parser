@@ -23,7 +23,6 @@ struct JsonCreator {
   void operator()(const messages::application_layer::OrderBookSnapShot &);
 
 private:
-
   void add_element(const schema::structs::SBEHeader &);
   void add_element(const schema::structs::groupSize &);
   void add_element(const messages::application_layer::BestPricesEntry &);
@@ -56,17 +55,20 @@ private:
   }
 
   template <typename T>
-  requires(!schema::types::is_decimal_t<T>) std::string
-      optional_record_element(const std::string &key, T optional,
-                          bool is_last = false) {
+  std::string optional_record_element(const std::string &key, T optional,
+                                      bool is_last = false) {
     if (!optional.has_value())
       return "";
     return key_element(key) + add_numeric_value(optional.value(), is_last);
   }
+
+  // Decimal types require printing with precision (5 places). So std::to_chars
+  // (c++17 onwards) is used for thatused for that and a member method to_string
+  // is defined. It is expected to be performant compared to other alternatives.
   template <typename T>
   requires schema::types::is_decimal_t<T> std::string
   optional_record_element(const std::string &key, T optional,
-                      bool is_last = false) {
+                          bool is_last = false) {
     if (!optional.has_value())
       return "";
     return key_element(key) + optional.to_string() + (is_last ? "" : comma);
@@ -75,28 +77,30 @@ private:
   template <typename T>
   requires(!schema::types::is_decimal_t<T>) std::string
       numeric_record_element(const std::string &key, T value,
-                         bool is_last = false) {
+                             bool is_last = false) {
     return key_element(key) + add_numeric_value(value, is_last);
   }
 
   template <typename T>
   requires schema::types::is_decimal_t<T> std::string
-  numeric_record_element(const std::string &key, T value, bool is_last = false) {
+  numeric_record_element(const std::string &key, T value,
+                         bool is_last = false) {
     return key_element(key) + value.to_string() + (is_last ? "" : comma);
   }
 
   template <typename T>
   std::string enum_record_element(const std::string &key, T val,
-                              bool is_last = false) {
+                                  bool is_last = false) {
     return key_element(key) + double_quote + schema::enums::to_string(val) +
            double_quote + (is_last ? "" : comma);
   }
 
   template <typename T>
   std::string bitmask_record_element(const std::string &key, uint64_t val,
-                                 bool is_last = false) {
-    return key_element(key) + double_quote + schema::bitmasks::to_string<T>(val) +
-           double_quote + (is_last ? "" : comma);
+                                     bool is_last = false) {
+    return key_element(key) + double_quote +
+           schema::bitmasks::to_string<T>(val) + double_quote +
+           (is_last ? "" : comma);
   }
 
   static inline const std::string colon = ": ";
@@ -106,6 +110,10 @@ private:
   static inline const std::string end_brace = "}";
   static inline const std::string start_array = "[";
   static inline const std::string end_array = "]";
+
+  // the below string is reused across different calls to avoid repeated
+  // allocations/deallocations with stack objects. Although that approach is
+  // relatively safer.
   std::string current_json_string_;
 
   WriterCallback cb_;

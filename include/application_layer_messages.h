@@ -10,6 +10,7 @@
 
 namespace simba::messages::application_layer {
 enum class MessageTypes : std::uint16_t {
+  //only supported ones
   BestPrices = 14,
   OrderUpdate = 15,
   OrderExecution = 16,
