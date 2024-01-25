@@ -5,9 +5,9 @@
 
 namespace reader {
 PcapReader::PcapReader(DecoderCb &&cb, std::ostream& os) : cb_(cb), l_(os) {}
-void PcapReader::read_packets(const std::string &file_path) {
+void PcapReader::read_packets(std::string_view file_path) {
   char errbuf[PCAP_ERRBUF_SIZE];
-  auto handle = pcap_open_offline(file_path.c_str(), errbuf);
+  auto handle = pcap_open_offline(file_path.data(), errbuf);
   if (handle == nullptr) {
     l_ << "PcapReader: Could not open file = " << file_path << std::endl;
     exit(EXIT_FAILURE);

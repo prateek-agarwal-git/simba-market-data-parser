@@ -4,7 +4,9 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <unistd.h>
+#include <vector>
 
 namespace tests {
 
@@ -50,7 +52,13 @@ private:
   void integration_test_3();
   void integration_test_4();
   void integration_test_5();
+  void integration_test_6();
+
+  bool packet_reader_test(std::string_view file_name,
+                          std::vector<int> expected_payload_lengths);
   void assert_true(const std::string &test_name, bool expression);
+  bool integration_test(std::string_view inpcap_file,
+                        std::string_view json_file);
 
   template <typename T> void update_buffer(uint8_t *&buffer, T val) {
     std::memcpy(buffer, &val, sizeof(T));

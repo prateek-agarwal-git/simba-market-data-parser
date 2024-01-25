@@ -11,9 +11,8 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
-#include <unistd.h>
-#include <vector>
 #include <string_view>
+#include <unistd.h>
 
 int main() {
   std::string test_log = "test_" + std::to_string(getpid()) + ".txt";
@@ -39,7 +38,7 @@ void test_fixture::run_integration_tests() {
   integration_test_3();
   integration_test_4();
   integration_test_5();
-
+  integration_test_6();
 }
 void test_fixture::run_protocol_decoder_tests() {
   decode_order_update_test();
@@ -48,26 +47,74 @@ void test_fixture::run_protocol_decoder_tests() {
   decode_order_book_snapshot_test();
 }
 
-  void test_fixture::integration_test_1(){
+void test_fixture::integration_test_1() {
+  std::string inpcap_file =
+      current_directory_path + "/tests/test_pcaps/order_update.pcap";
+  std::string json_file =
+      current_directory_path + "/tests/expected_json_outputs/order_update.json";
+  assert_true("integration_test_1", integration_test(inpcap_file, json_file));
+}
 
-
-//  assert_true("run_basic_stream_writer_test", expected_output == ss.str());
-
-
-  }
-  void test_fixture::integration_test_2(){}
-  void test_fixture::integration_test_3(){}
-  void test_fixture::integration_test_4(){}
-  void test_fixture::integration_test_5(){}
+bool test_fixture::integration_test(std::string_view inpcap_file,
+                                    std::string_view json_file) {
+  std::stringstream ss;
+  writer::StreamWriter W(ss);
+  simba::JsonCreator J(W);
+  simba::ProtocolDecoder PD(J, os_);
+  reader::PcapReader Reader(PD, os_);
+  Reader.read_packets(inpcap_file);
+  std::ifstream ifs(json_file.data(), std::ios::binary | std::ios::ate);
+  const auto size = ifs.tellg();
+  std::string expected_output(size, '\0');
+  ifs.seekg(0);
+  ifs.read(&expected_output[0], size);
+  return expected_output == ss.str();
+}
+void test_fixture::integration_test_2() {
+  std::string inpcap_file =
+      current_directory_path + "/tests/test_pcaps/order_execution.pcap";
+  std::string json_file = current_directory_path +
+                          "/tests/expected_json_outputs/order_execution.json";
+  assert_true("integration_test_2", integration_test(inpcap_file, json_file));
+}
+void test_fixture::integration_test_3() {
+  std::string inpcap_file =
+      current_directory_path + "/tests/test_pcaps/next_best_prices.pcap";
+  std::string json_file = current_directory_path +
+                          "/tests/expected_json_outputs/next_best_prices.json";
+  assert_true("integration_test_3", integration_test(inpcap_file, json_file));
+}
+void test_fixture::integration_test_4() {
+  std::string inpcap_file =
+      current_directory_path + "/tests/test_pcaps/long_snapshot.pcap";
+  std::string json_file = current_directory_path +
+                          "/tests/expected_json_outputs/long_snapshot.json";
+  assert_true("integration_test_4", integration_test(inpcap_file, json_file));
+}
+void test_fixture::integration_test_5() {
+  std::string inpcap_file =
+      current_directory_path + "/tests/test_pcaps/multiple_order_updates.pcap";
+  std::string json_file =
+      current_directory_path +
+      "/tests/expected_json_outputs/multiple_order_updates.json";
+  assert_true("integration_test_5", integration_test(inpcap_file, json_file));
+}
+void test_fixture::integration_test_6() {
+  std::string inpcap_file =
+      current_directory_path +
+      "/tests/test_pcaps/snapshot_end_and_start_within_same_packet.pcap";
+  std::string json_file = current_directory_path +
+                          "/tests/expected_json_outputs/"
+                          "snapshot_end_and_start_within_same_packet.json";
+  assert_true("integration_test_6", integration_test(inpcap_file, json_file));
+}
 
 void test_fixture::run_basic_stream_writer_test() {
   std::stringstream ss;
   std::string expected_output = "Hello world\n";
-  writer::StreamWriter<decltype(ss)> sw (ss);
+  writer::StreamWriter<decltype(ss)> sw(ss);
   sw(expected_output);
   assert_true("run_basic_stream_writer_test", expected_output == ss.str());
-
-
 }
 void test_fixture::decode_order_update_test() {
   using namespace simba::messages::application_layer;
@@ -101,7 +148,7 @@ void test_fixture::decode_order_update_test() {
   update_buffer(tmp, expected_order_update);
 
   DecoderOutputFunctor output_fn;
-  simba::ProtocolDecoder pd(output_fn,os_);
+  simba::ProtocolDecoder pd(output_fn, os_);
   pd({buffer, 86});
   auto output_mdp = output_fn.mdp_header();
   auto output_inc = output_fn.inc_header();
@@ -159,7 +206,7 @@ void test_fixture::decode_order_execution_test() {
   update_buffer(tmp, expected_order_exec.MDUpdateAction);
   update_buffer(tmp, expected_order_exec.MDEntryType);
   DecoderOutputFunctor output_fn;
-  simba::ProtocolDecoder pd(output_fn,os_);
+  simba::ProtocolDecoder pd(output_fn, os_);
   pd({buffer, 110});
   assert_true("decode_order_execution_test",
               expected_order_exec == output_fn.order_execution() &&
@@ -220,7 +267,7 @@ void test_fixture::decode_best_prices_test() {
   }
 
   DecoderOutputFunctor output_fn;
-  simba::ProtocolDecoder pd(output_fn,os_);
+  simba::ProtocolDecoder pd(output_fn, os_);
   pd({buffer, 111});
   assert_true("decoder_best_prices_test",
               expected_mdp == output_fn.mdp_header() &&
@@ -362,81 +409,59 @@ void test_fixture::json_order_book_snapshot_test() {
 }
 
 void test_fixture::packet_reader_1() {
-  int count{};
-  int expected_payload_length{86};
-  int output_length{};
-  auto cb = [&count, &output_length](auto buf_sv) {
-    ++count;
-    output_length = buf_sv.size();
-  };
-
-  reader::PcapReader pcap_reader(std::move(cb), os_);
-  pcap_reader.read_packets(current_directory_path +
-                           "tests/test_pcaps/order_update.pcap");
+  std::vector<int> expected_payload_lengths{86};
+  std::string file_name =
+      current_directory_path + "tests/test_pcaps/order_update.pcap";
   assert_true("packet_reader_num_packets_test_1",
-              (count == 1) && (expected_payload_length == output_length));
+              packet_reader_test(file_name, expected_payload_lengths));
 }
 void test_fixture::packet_reader_2() {
-  int count{};
   std::vector<int> expected_payload_lengths(8, 1354);
   expected_payload_lengths.push_back(898);
-  std::vector<int> output_lengths;
-  auto cb = [&count, &output_lengths](auto buf_sv) {
-    ++count;
-    output_lengths.push_back(buf_sv.size());
-  };
-
-  reader::PcapReader pcap_reader(std::move(cb), os_);
-  pcap_reader.read_packets(current_directory_path +
-                           "tests/test_pcaps/long_snapshot.pcap");
+  std::string file_name =
+      current_directory_path + "tests/test_pcaps/long_snapshot.pcap";
   assert_true("packet_reader_num_packets_test_2",
-              (count == 9) && expected_payload_lengths == output_lengths);
+              packet_reader_test(file_name, expected_payload_lengths));
 }
+
 void test_fixture::packet_reader_3() {
-  int count{};
   std::vector<int> expected_payload_lengths{75, 250};
-  std::vector<int> output_lengths;
-  auto cb = [&count, &output_lengths](auto buf_sv) {
-    ++count;
-    output_lengths.push_back(buf_sv.size());
-  };
-
-  reader::PcapReader pcap_reader(std::move(cb), os_);
-  pcap_reader.read_packets(current_directory_path +
-                           "tests/test_pcaps/next_best_prices.pcap");
+  std::string file_name =
+      current_directory_path + "tests/test_pcaps/next_best_prices.pcap";
   assert_true("packet_reader_num_packets_test_3",
-              (count == 2) && expected_payload_lengths == output_lengths);
+              packet_reader_test(file_name, expected_payload_lengths));
 }
-void test_fixture::packet_reader_4() {
-  int expected_payload_length{110};
-  int output_length{};
-  int count{};
-  auto cb = [&count, &output_length](auto buf_sv) {
-    ++count;
-    output_length = buf_sv.size();
-  };
 
-  reader::PcapReader pcap_reader(std::move(cb), os_);
-  pcap_reader.read_packets(current_directory_path +
-                           "tests/test_pcaps/order_execution.pcap");
+void test_fixture::packet_reader_4() {
+  std::vector<int> expected_payload_lengths{110};
+  std::string file_name = current_directory_path +
+                           "tests/test_pcaps/order_execution.pcap";
   assert_true("packet_reader_num_packets_test_4",
-              (count == 1) && (expected_payload_length == output_length));
+              packet_reader_test(file_name, expected_payload_lengths));
 }
 void test_fixture::packet_reader_5() {
-  int count{};
-  int output_length{};
-  int expected_length{100};
-  auto cb = [&count, &output_length](auto  buf_sv) {
-    ++count;
-    output_length = buf_sv.size();
-  };
-  reader::PcapReader pcap_reader(std::move(cb), os_);
-  pcap_reader.read_packets(
-      current_directory_path +
-      "tests/test_pcaps/snapshot_end_and_start_within_same_packet.pcap");
+  std::vector<int> expected_payload_lengths{100};
+  std::string file_name = current_directory_path +
+                           "tests/test_pcaps/snapshot_end_and_start_within_same_packet.pcap";
+
   assert_true("packet_reader_num_packets_test_5",
-              count == 1 && (expected_length == output_length));
+              packet_reader_test(file_name, expected_payload_lengths));
 }
+
+bool test_fixture::packet_reader_test(
+    std::string_view file_name, std::vector<int> expected_payload_lengths) {
+  std::vector<int> output_lengths;
+  auto cb = [&output_lengths](auto buf_sv) {
+    output_lengths.push_back(buf_sv.size());
+  };
+
+  reader::PcapReader pcap_reader(std::move(cb), os_);
+  pcap_reader.read_packets(file_name);
+  return output_lengths == expected_payload_lengths;
+}
+
+
+
 void test_fixture::json_best_prices_test() {
   using namespace simba::messages::application_layer;
   std::string expected_json_output =
