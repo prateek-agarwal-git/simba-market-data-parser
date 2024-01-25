@@ -7,6 +7,7 @@ all: build/market_data_parser build/mdp_tests
 build/market_data_parser: src/main.cpp ${INC_DIR}/* ${INC_DIR}/*/* $(OBJ_FILES)
 	$(CC) $(CPPFLAGS)  src/main.cpp $(OBJ_FILES) -o build/market_data_parser -lpcap
 
+# current directory path given as compile time definition for pcap tests
 build/mdp_tests: tests/tests.cpp ${INC_DIR}/* ${INC_DIR}/*/* $(OBJ_FILES)
 	$(CC) $(CPPFLAGS)  tests/tests.cpp $(OBJ_FILES) -o build/mdp_tests -lpcap -DCURDIR=\"${CURDIR}\"
 
