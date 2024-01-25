@@ -361,9 +361,9 @@ void test_fixture::run_packet_reader_tests() {
   packet_reader_5();
 }
 void test_fixture::run_json_creator_tests() {
-  json_order_update_test();
   json_mdp_header_test();
   json_incremental_header_test();
+  json_order_update_test();
   json_order_execution_test();
   json_best_prices_test();
   json_order_book_snapshot_test();
@@ -399,13 +399,20 @@ void test_fixture::json_order_book_snapshot_test() {
   std::string expected_json_output =
       R"({{"OrderBookSnapShot": {"SBEHeader": {"BlockLength": 10, "TemplateId": 30, "SchemaId": 20, "Version": 40}, "SecurityId": 29, "LastMsgSeqNumProcessed": 100786, "RptSeq": 8402, "ExchangeTradingSessionId": 289423126, "NoMDEntries": {"blockLength": 57, "numInGroup": 1}, , "Snapshots": [{"TransactTime": 1024, "MDFlags": "IOC|Synthetic", "MDFlags2": "", "MDEntryType": "Bid"}, {"MDEntryId": 9845, "TransactTime": 2048, "MDEntryPx": 194.56321, "MDEntrySize": 184, "MDFlags": "Multileg|ActiveSide", "MDFlags2": "Zero", "MDEntryType": "Offer"}]}}})";
   expected_json_output += "\n";
+  assert_true("json_order_book_snapshot",
+              json_creator_test(order_book_snapshot, expected_json_output));
+}
+
+bool test_fixture::json_creator_test(auto order_struct,
+                                     const std::string &expected_json_output) {
+
   std::string output;
   auto cb = [&output](const std::string &json) { output = json; };
   simba::JsonCreator json_creator(std::move(cb));
   json_creator(simba::tag_structs::start_packet{});
-  json_creator(order_book_snapshot);
+  json_creator(order_struct);
   json_creator(simba::tag_structs::end_packet{});
-  assert_true("json_order_book_snapshot", output == expected_json_output);
+  return output == expected_json_output;
 }
 
 void test_fixture::packet_reader_1() {
@@ -434,15 +441,16 @@ void test_fixture::packet_reader_3() {
 
 void test_fixture::packet_reader_4() {
   std::vector<int> expected_payload_lengths{110};
-  std::string file_name = current_directory_path +
-                           "tests/test_pcaps/order_execution.pcap";
+  std::string file_name =
+      current_directory_path + "tests/test_pcaps/order_execution.pcap";
   assert_true("packet_reader_num_packets_test_4",
               packet_reader_test(file_name, expected_payload_lengths));
 }
 void test_fixture::packet_reader_5() {
   std::vector<int> expected_payload_lengths{100};
-  std::string file_name = current_directory_path +
-                           "tests/test_pcaps/snapshot_end_and_start_within_same_packet.pcap";
+  std::string file_name =
+      current_directory_path +
+      "tests/test_pcaps/snapshot_end_and_start_within_same_packet.pcap";
 
   assert_true("packet_reader_num_packets_test_5",
               packet_reader_test(file_name, expected_payload_lengths));
@@ -460,8 +468,6 @@ bool test_fixture::packet_reader_test(
   return output_lengths == expected_payload_lengths;
 }
 
-
-
 void test_fixture::json_best_prices_test() {
   using namespace simba::messages::application_layer;
   std::string expected_json_output =
@@ -478,14 +484,8 @@ void test_fixture::json_best_prices_test() {
                          .NoMDEntries = {.blockLength = 36, .numInGroup = 2},
                          .Entries = v};
 
-  std::string output;
-  auto cb = [&output](const std::string &json) { output = json; };
-  simba::JsonCreator json_creator(std::move(cb));
-  json_creator(simba::tag_structs::start_packet{});
-  json_creator(best_prices);
-  json_creator(simba::tag_structs::end_packet{});
-
-  assert_true("json_best_prices_test", output == expected_json_output);
+  assert_true("json_best_prices_test",
+              json_creator_test(best_prices, expected_json_output));
 }
 void test_fixture::json_order_execution_test() {
   simba::messages::application_layer::OrderExecution order_execution{
@@ -509,13 +509,9 @@ void test_fixture::json_order_execution_test() {
       std::string(R"({{"OrderExecution": )") + sbe_header_json_ +
       R"(, "MDEntryId": 23, "MDEntrySize": 100, "LastPx": 84.63210, "LastQty": 74, "TradeId": 56, "MDFlags": "IOC|DuringDiscreteAuction", "MDFlags2": "", "SecurityId": 90, "RptSeq": 1000001, "MDUpdateAction": "Delete", "MDEntryType": "Bid"}}})" +
       "\n";
-  std::string output;
-  auto cb = [&output](const std::string &json) { output = json; };
-  simba::JsonCreator json_creator(std::move(cb));
-  json_creator(simba::tag_structs::start_packet{});
-  json_creator(order_execution);
-  json_creator(simba::tag_structs::end_packet{});
-  assert_true("json_order_execution_test", output == expected_json_output);
+
+  assert_true("json_order_execution_test",
+              json_creator_test(order_execution, expected_json_output));
 }
 void test_fixture::json_incremental_header_test() {
 
@@ -525,13 +521,8 @@ void test_fixture::json_incremental_header_test() {
   std::string expected_json_output =
       R"({{"IncrementalHeader": {"TransactTime": 1092, "ExchangeTradingSessionId": 2345864}}})";
   expected_json_output += "\n";
-  std::string output;
-  auto cb = [&output](const std::string &json) { output = json; };
-  simba::JsonCreator json_creator(std::move(cb));
-  json_creator(simba::tag_structs::start_packet{});
-  json_creator(incremental_header);
-  json_creator(simba::tag_structs::end_packet{});
-  assert_true("json_incremental_header_test", output == expected_json_output);
+  assert_true("json_incremental_header_test",
+              json_creator_test(incremental_header, expected_json_output));
 }
 
 void test_fixture::json_mdp_header_test() {
@@ -542,14 +533,8 @@ void test_fixture::json_mdp_header_test() {
   std::string expected_json_output =
       R"({{"MDPHeader": {"MsgSeqNum": 19, "MsgSize": 84, "MsgFlags": 8, "SendingTime": 12344321}}})";
   expected_json_output += "\n";
-  std::string output;
-  auto cb = [&output](const std::string &json) { output = json; };
-  simba::JsonCreator json_creator(std::move(cb));
-  json_creator(simba::tag_structs::start_packet{});
-  json_creator(mdp_header);
-  json_creator(simba::tag_structs::end_packet{});
-
-  assert_true("json_mdp_header_test", output == expected_json_output);
+  assert_true("json_mdp_header_test",
+              json_creator_test(mdp_header, expected_json_output));
 }
 void test_fixture::json_order_update_test() {
   simba::messages::application_layer::OrderUpdate order_update{
@@ -568,13 +553,8 @@ void test_fixture::json_order_update_test() {
       std::string(R"({{"OrderUpdate": )") + sbe_header_json_ +
       R"(, "MDEntryId": 100, "MDEntryPx": 12.34567, "MDEntrySize": 25, "MDFlags": "DAY", "MDFlags2": "Zero", "SecurityId": 84, "RptSeq": 123432, "MDUpdateAction": "New", "MDEntryType": "Offer"}}})";
   expected_json_output += "\n";
-  std::string ans;
-  auto cb = [&ans](const std::string &json) { ans = json; };
-  simba::JsonCreator json_creator(std::move(cb));
-  json_creator(simba::tag_structs::start_packet{});
-  json_creator(order_update);
-  json_creator(simba::tag_structs::end_packet{});
-  assert_true("json_order_update_test", ans == expected_json_output);
+  assert_true("json_order_update_test",
+              json_creator_test(order_update, expected_json_output));
 }
 
 void test_fixture::assert_true(const std::string &test_name, bool expression) {

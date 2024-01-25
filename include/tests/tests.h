@@ -56,6 +56,9 @@ private:
 
   bool packet_reader_test(std::string_view file_name,
                           std::vector<int> expected_payload_lengths);
+
+  bool json_creator_test(auto order_struct,
+                         const std::string &expected_json_output);
   void assert_true(const std::string &test_name, bool expression);
   bool integration_test(std::string_view inpcap_file,
                         std::string_view json_file);
