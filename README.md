@@ -8,7 +8,7 @@ Tested compilation with g++ 11.4.0. C++20 features used.
 ## Usage
 
 1. ```market_data_parser```
-Usage: ./<binary-name> --out_file=response.json --inpcap_file=infile.pcap --logfile_path=log.txt
+Usage:./market_data_parser --out_file=response.json --inpcap_file=infile.pcap --logfile_path=log.txtR
 inpcap_file is a compulsory argument. The default output file is response.json. The default logfile path is log.txt.
 
 2. ```mdp_tests```
@@ -54,18 +54,23 @@ Definitions of all the structs that will be filled by the decoder after parsing 
 
 ## Testing
 
+Component unit tests as well as integration tests are provided for rigorous regression testing and as a demonstration of expected outputs. The implementation is testable as customized callbacks can be registered with different components to  test them.
+
 1. ```tests.h```
 Defines the interface of test_fixture.
 
-2. ```tests/tests.cpp```
+2. ```decoder_output_functor.h```
+This is a testing functor that will save the output of decoder in tests. This output can be retrieved later to check with the expected output.
+
+3. ```tests/tests.cpp```
 Source file containing the implementation of tests and main routine.
 
-3. ```tests/test_pcaps/*```
+4. ```tests/test_pcaps/*```
 Contains testing pcaps.
 
-4. ```tests/expected_json_outputs/*```
+5. ```tests/expected_json_outputs/*```
 Contains Json output corresponding to the testing pcaps.
 
 ## Implementation Notes
 
-Modern C++ 17, 20 features like ```std::optional, std::concepts, std::to_chars, enum classes, structured bindings```. Use of third party libraries for pasing config parameters, logging, testing etc. is avoided for portability and minimizing dependencies. This limits the flexibility/safety/performance improvement of the current implementation that is generally provided by the third party libraries.
+Modern C++ 17, 20 features/data structures like ```std::optional, std::concepts, std::to_chars, enum classes, structured bindings```. Use of third party libraries for pasing config parameters, logging, testing etc. is avoided for portability and minimizing dependencies. This limits the flexibility/safety/performance improvement of the current implementation that is generally provided by the third party libraries.
