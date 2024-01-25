@@ -23,20 +23,20 @@ void JsonCreator::operator()(tag_structs::end_packet) {
 void JsonCreator::operator()(
     const schema::structs::MarketDataPacketHeader &mdp_header) {
   start_main_element("MDPHeader");
-  current_json_string_ += add_numeric_record("MsgSeqNum", mdp_header.MsgSeqNum);
-  current_json_string_ += add_numeric_record("MsgSize", mdp_header.MsgSize);
-  current_json_string_ += add_numeric_record("MsgFlags", mdp_header.MsgFlags);
+  current_json_string_ += numeric_record_element("MsgSeqNum", mdp_header.MsgSeqNum);
+  current_json_string_ += numeric_record_element("MsgSize", mdp_header.MsgSize);
+  current_json_string_ += numeric_record_element("MsgFlags", mdp_header.MsgFlags);
   current_json_string_ +=
-      add_numeric_record("SendingTime", mdp_header.SendingTime, true);
+      numeric_record_element("SendingTime", mdp_header.SendingTime, true);
   end_main_element();
 }
 void JsonCreator::operator()(
     const schema::structs::IncrementalPacketHeader &incremental_header) {
   start_main_element("IncrementalHeader");
   current_json_string_ +=
-      add_numeric_record("TransactTime", incremental_header.TransactTime);
+      numeric_record_element("TransactTime", incremental_header.TransactTime);
   current_json_string_ +=
-      add_numeric_record("ExchangeTradingSessionId",
+      numeric_record_element("ExchangeTradingSessionId",
                          incremental_header.ExchangeTradingSessionId, true);
 
   end_main_element();
@@ -56,22 +56,22 @@ void JsonCreator::operator()(
   add_element(order_update.S);
   current_json_string_ += comma;
   current_json_string_ +=
-      add_numeric_record("MDEntryId", order_update.MDEntryId);
+      numeric_record_element("MDEntryId", order_update.MDEntryId);
   current_json_string_ +=
-      add_numeric_record("MDEntryPx", order_update.MDEntryPx);
+      numeric_record_element("MDEntryPx", order_update.MDEntryPx);
   current_json_string_ +=
-      add_numeric_record("MDEntrySize", order_update.MDEntrySize);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>(
+      numeric_record_element("MDEntrySize", order_update.MDEntrySize);
+  current_json_string_ += bitmask_record_element<schema::bitmasks::MDFlagsSet>(
       "MDFlags", order_update.MDFlags);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>(
+  current_json_string_ += bitmask_record_element<schema::bitmasks::MDFlags2Set>(
       "MDFlags2", order_update.MDFlags2);
   current_json_string_ +=
-      add_numeric_record("SecurityId", order_update.SecurityId);
-  current_json_string_ += add_numeric_record("RptSeq", order_update.RptSeq);
+      numeric_record_element("SecurityId", order_update.SecurityId);
+  current_json_string_ += numeric_record_element("RptSeq", order_update.RptSeq);
   current_json_string_ +=
-      add_enum_record("MDUpdateAction", order_update.MDUpdateAction);
+      enum_record_element("MDUpdateAction", order_update.MDUpdateAction);
   current_json_string_ +=
-      add_enum_record("MDEntryType", order_update.MDEntryType, true);
+      enum_record_element("MDEntryType", order_update.MDEntryType, true);
   end_main_element();
 }
 void JsonCreator::operator()(
@@ -80,29 +80,29 @@ void JsonCreator::operator()(
   add_element(order_execution.S);
   current_json_string_ += comma;
   current_json_string_ +=
-      add_numeric_record("MDEntryId", order_execution.MDEntryId);
+      numeric_record_element("MDEntryId", order_execution.MDEntryId);
   current_json_string_ +=
-      add_optional_record("MDEntryPx", order_execution.MDEntryPx);
+      optional_record_element("MDEntryPx", order_execution.MDEntryPx);
   current_json_string_ +=
-      add_optional_record("MDEntrySize", order_execution.MDEntrySize);
-  current_json_string_ += add_numeric_record("LastPx", order_execution.LastPx);
+      optional_record_element("MDEntrySize", order_execution.MDEntrySize);
+  current_json_string_ += numeric_record_element("LastPx", order_execution.LastPx);
   current_json_string_ +=
-      add_numeric_record("LastQty", order_execution.LastQty);
+      numeric_record_element("LastQty", order_execution.LastQty);
   current_json_string_ +=
-      add_numeric_record("TradeId", order_execution.TradeId);
+      numeric_record_element("TradeId", order_execution.TradeId);
 
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>(
+  current_json_string_ += bitmask_record_element<schema::bitmasks::MDFlagsSet>(
       "MDFlags", order_execution.MDFlags);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>(
+  current_json_string_ += bitmask_record_element<schema::bitmasks::MDFlags2Set>(
       "MDFlags2", order_execution.MDFlags2);
   current_json_string_ +=
-      add_numeric_record("SecurityId", order_execution.SecurityId);
+      numeric_record_element("SecurityId", order_execution.SecurityId);
 
-  current_json_string_ += add_numeric_record("RptSeq", order_execution.RptSeq);
+  current_json_string_ += numeric_record_element("RptSeq", order_execution.RptSeq);
   current_json_string_ +=
-      add_enum_record("MDUpdateAction", order_execution.MDUpdateAction);
+      enum_record_element("MDUpdateAction", order_execution.MDUpdateAction);
   current_json_string_ +=
-      add_enum_record("MDEntryType", order_execution.MDEntryType, true);
+      enum_record_element("MDEntryType", order_execution.MDEntryType, true);
 
   end_main_element();
 }
@@ -112,11 +112,11 @@ void JsonCreator::operator()(
   add_element(order_snapshot.S);
   current_json_string_ += comma;
   current_json_string_ +=
-      add_numeric_record("SecurityId", order_snapshot.SecurityId);
-  current_json_string_ += add_numeric_record(
+      numeric_record_element("SecurityId", order_snapshot.SecurityId);
+  current_json_string_ += numeric_record_element(
       "LastMsgSeqNumProcessed", order_snapshot.LastMsgSeqNumProcessed);
-  current_json_string_ += add_numeric_record("RptSeq", order_snapshot.RptSeq);
-  current_json_string_ += add_numeric_record(
+  current_json_string_ += numeric_record_element("RptSeq", order_snapshot.RptSeq);
+  current_json_string_ += numeric_record_element(
       "ExchangeTradingSessionId", order_snapshot.ExchangeTradingSessionId);
   add_element(order_snapshot.NoMDEntries);
   current_json_string_ += comma;
@@ -125,52 +125,52 @@ void JsonCreator::operator()(
 }
 
 void JsonCreator::add_element(const schema::structs::SBEHeader &S) {
-  current_json_string_ += add_key("SBEHeader");
+  current_json_string_ += key_element("SBEHeader");
   current_json_string_ += start_brace;
-  current_json_string_ += add_numeric_record("BlockLength", S.BlockLength);
-  current_json_string_ += add_numeric_record("TemplateId", S.TemplateId);
-  current_json_string_ += add_numeric_record("SchemaId", S.SchemaId);
-  current_json_string_ += add_numeric_record("Version", S.Version, true);
+  current_json_string_ += numeric_record_element("BlockLength", S.BlockLength);
+  current_json_string_ += numeric_record_element("TemplateId", S.TemplateId);
+  current_json_string_ += numeric_record_element("SchemaId", S.SchemaId);
+  current_json_string_ += numeric_record_element("Version", S.Version, true);
   current_json_string_ += end_brace;
 }
 
 void JsonCreator::add_element(const schema::structs::groupSize &G) {
-  current_json_string_ += add_key("NoMDEntries");
+  current_json_string_ += key_element("NoMDEntries");
   current_json_string_ += start_brace;
-  current_json_string_ += add_numeric_record("blockLength", G.blockLength);
+  current_json_string_ += numeric_record_element("blockLength", G.blockLength);
   current_json_string_ +=
-      add_numeric_record("numInGroup", G.numInGroup, true /*is_last*/);
+      numeric_record_element("numInGroup", G.numInGroup, true /*is_last*/);
   current_json_string_ += end_brace;
 }
 
 void JsonCreator::add_element(
     const messages::application_layer::BestPricesEntry &entry) {
   current_json_string_ += start_brace;
-  current_json_string_ += add_optional_record("MktBidPx", entry.MktBidPx);
-  current_json_string_ += add_optional_record("MktOfferPx", entry.MktOfferPx);
-  current_json_string_ += add_optional_record("MktBidSize", entry.MktBidSize);
+  current_json_string_ += optional_record_element("MktBidPx", entry.MktBidPx);
+  current_json_string_ += optional_record_element("MktOfferPx", entry.MktOfferPx);
+  current_json_string_ += optional_record_element("MktBidSize", entry.MktBidSize);
   current_json_string_ +=
-      add_optional_record("MktOfferSize", entry.MktOfferSize);
+      optional_record_element("MktOfferSize", entry.MktOfferSize);
   current_json_string_ +=
-      add_numeric_record("SecurityId", entry.SecurityId, true /*is_last*/);
+      numeric_record_element("SecurityId", entry.SecurityId, true /*is_last*/);
   current_json_string_ += end_brace;
 }
 
 void JsonCreator::add_element(
     const messages::application_layer::SnapShotEntry &entry) {
   current_json_string_ += start_brace;
-  current_json_string_ += add_optional_record("MDEntryId", entry.MDEntryId);
+  current_json_string_ += optional_record_element("MDEntryId", entry.MDEntryId);
   current_json_string_ +=
-      add_numeric_record("TransactTime", entry.TransactTime);
-  current_json_string_ += add_optional_record("MDEntryPx", entry.MDEntryPx);
-  current_json_string_ += add_optional_record("MDEntrySize", entry.MDEntrySize);
-  current_json_string_ += add_optional_record("TradeId", entry.TradeId);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlagsSet>(
+      numeric_record_element("TransactTime", entry.TransactTime);
+  current_json_string_ += optional_record_element("MDEntryPx", entry.MDEntryPx);
+  current_json_string_ += optional_record_element("MDEntrySize", entry.MDEntrySize);
+  current_json_string_ += optional_record_element("TradeId", entry.TradeId);
+  current_json_string_ += bitmask_record_element<schema::bitmasks::MDFlagsSet>(
       "MDFlags", entry.MDFlags);
-  current_json_string_ += add_bitmask_record<schema::bitmasks::MDFlags2Set>(
+  current_json_string_ += bitmask_record_element<schema::bitmasks::MDFlags2Set>(
       "MDFlags2", entry.MDFlags2);
   current_json_string_ +=
-      add_enum_record("MDEntryType", entry.MDEntryType, true);
+      enum_record_element("MDEntryType", entry.MDEntryType, true);
   current_json_string_ += end_brace;
 }
 
@@ -182,7 +182,7 @@ void JsonCreator::end_main_element() {
 
 void JsonCreator::start_main_element(const std::string &key) {
   current_json_string_ += start_brace;
-  current_json_string_ += add_key(key);
+  current_json_string_ += key_element(key);
   current_json_string_ += start_brace;
 }
 
