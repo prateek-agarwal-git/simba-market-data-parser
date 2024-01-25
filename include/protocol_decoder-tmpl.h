@@ -2,12 +2,13 @@ namespace simba {
 
 template <typename OutputFunctor, typename LogStream>
 inline void ProtocolDecoder<OutputFunctor, LogStream>::operator()(
-    const std::uint8_t *packet, int payload_length) {
+    std::basic_string_view<uint8_t> buffer_sv) {
+  auto packet = buffer_sv.data();
   auto *mdp_header =
       reinterpret_cast<const schema::structs::MarketDataPacketHeader *>(packet);
-  if (mdp_header->MsgSize != payload_length) {
+  if (mdp_header->MsgSize != buffer_sv.size()) {
     l_ << "Invalid Packet:" << *mdp_header
-       << " Expected Payload Length=" << payload_length << std::endl;
+       << " Expected Payload Length=" << buffer_sv.size() << std::endl;
     return;
   }
   output_(tag_structs::start_packet{});
@@ -16,17 +17,18 @@ inline void ProtocolDecoder<OutputFunctor, LogStream>::operator()(
   constexpr auto processed_bytes =
       sizeof(schema::structs::MarketDataPacketHeader);
   if (is_snapshot) {
-    decode_snapshot_packet(packet + processed_bytes,
-                           payload_length - processed_bytes);
+    decode_snapshot_packet(
+        {packet + processed_bytes, buffer_sv.size() - processed_bytes});
   } else {
-    decode_incremental_packet(packet + processed_bytes,
-                              payload_length - processed_bytes);
+    decode_incremental_packet(
+        {packet + processed_bytes, buffer_sv.size() - processed_bytes});
   }
 }
 
 template <typename OutputFunctor, typename LogStream>
 inline void ProtocolDecoder<OutputFunctor, LogStream>::decode_snapshot_packet(
-    const uint8_t *buffer, size_t remaining_bytes) {
+    std::basic_string_view<std::uint8_t> buffer_sv) {
+  auto buffer = buffer_sv.data();
 
   auto *sbe_header =
       reinterpret_cast<const schema::structs::SBEHeader *>(buffer);
@@ -66,11 +68,11 @@ inline void ProtocolDecoder<OutputFunctor, LogStream>::decode_snapshot_packet(
 
   output_(order_book_snapshot);
   output_(tag_structs::end_packet{});
-  assert(remaining_bytes == sizeof(OrderBookSnapShot::NoMDEntries) +
-                                sizeof(OrderBookSnapShot::S) +
-                                order_book_snapshot.S.BlockLength +
-                                order_book_snapshot.NoMDEntries.blockLength *
-                                    order_book_snapshot.NoMDEntries.numInGroup);
+  assert(buffer_sv.size() ==
+         sizeof(OrderBookSnapShot::NoMDEntries) + sizeof(OrderBookSnapShot::S) +
+             order_book_snapshot.S.BlockLength +
+             order_book_snapshot.NoMDEntries.blockLength *
+                 order_book_snapshot.NoMDEntries.numInGroup);
 
   return;
 }
@@ -78,29 +80,27 @@ inline void ProtocolDecoder<OutputFunctor, LogStream>::decode_snapshot_packet(
 template <typename OutputFunctor, typename LogStream>
 inline void
 ProtocolDecoder<OutputFunctor, LogStream>::decode_incremental_packet(
-    const uint8_t *buffer, const int remaining_bytes) {
+    std::basic_string_view<std::uint8_t> buffer_sv) {
+  auto buffer = buffer_sv.data();
   auto incremental_header =
       reinterpret_cast<const schema::structs::IncrementalPacketHeader *>(
           buffer);
   output_(*incremental_header);
-  int bytes_processed = sizeof(schema::structs::IncrementalPacketHeader);
-  while (remaining_bytes > bytes_processed) {
+  auto bytes_processed = sizeof(schema::structs::IncrementalPacketHeader);
+  while (buffer_sv.size() > bytes_processed) {
     auto *sbe_header = reinterpret_cast<const schema::structs::SBEHeader *>(
         buffer + bytes_processed);
     using namespace simba::messages::application_layer;
     switch (static_cast<MessageTypes>(sbe_header->TemplateId)) {
     case MessageTypes::BestPrices: {
       assert(sbe_header->BlockLength == 0);
-      auto delta = process_best_prices(buffer + bytes_processed);
-      bytes_processed += delta;
+      bytes_processed += process_best_prices(buffer + bytes_processed);
     } break;
     case MessageTypes::OrderUpdate: {
-      auto delta = process_order_update(buffer + bytes_processed);
-      bytes_processed += delta;
+      bytes_processed += process_order_update(buffer + bytes_processed);
     } break;
     case MessageTypes::OrderExecution: {
-      auto delta = process_order_execution(buffer + bytes_processed);
-      bytes_processed += delta;
+      bytes_processed += process_order_execution(buffer + bytes_processed);
     } break;
     default: {
       // do not parse it, yet increment the processed bytes

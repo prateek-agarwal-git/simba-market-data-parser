@@ -13,6 +13,7 @@
 #include <limits>
 #include <unistd.h>
 #include <vector>
+#include <string_view>
 
 int main() {
   std::string test_log = "test_" + std::to_string(getpid()) + ".txt";
@@ -29,14 +30,35 @@ void test_fixture::run_tests() {
   run_protocol_decoder_tests();
   run_json_creator_tests();
   run_basic_stream_writer_test();
+  run_integration_tests();
 }
 
+void test_fixture::run_integration_tests() {
+  integration_test_1();
+  integration_test_2();
+  integration_test_3();
+  integration_test_4();
+  integration_test_5();
+
+}
 void test_fixture::run_protocol_decoder_tests() {
   decode_order_update_test();
   decode_order_execution_test();
   decode_best_prices_test();
   decode_order_book_snapshot_test();
 }
+
+  void test_fixture::integration_test_1(){
+
+
+//  assert_true("run_basic_stream_writer_test", expected_output == ss.str());
+
+
+  }
+  void test_fixture::integration_test_2(){}
+  void test_fixture::integration_test_3(){}
+  void test_fixture::integration_test_4(){}
+  void test_fixture::integration_test_5(){}
 
 void test_fixture::run_basic_stream_writer_test() {
   std::stringstream ss;
@@ -78,12 +100,12 @@ void test_fixture::decode_order_update_test() {
   // packed in application_layer_messages.h
   update_buffer(tmp, expected_order_update);
 
-  DecoderOutputFunctor output_fn_;
-  simba::ProtocolDecoder pd(output_fn_,os_);
-  pd(buffer, 86);
-  auto output_mdp = output_fn_.mdp_header();
-  auto output_inc = output_fn_.inc_header();
-  auto output_update = output_fn_.order_update();
+  DecoderOutputFunctor output_fn;
+  simba::ProtocolDecoder pd(output_fn,os_);
+  pd({buffer, 86});
+  auto output_mdp = output_fn.mdp_header();
+  auto output_inc = output_fn.inc_header();
+  auto output_update = output_fn.order_update();
   assert_true("decoder_order_update",
               expected_mdp == output_mdp && output_inc == expected_inc &&
                   output_update == expected_order_update);
@@ -138,7 +160,7 @@ void test_fixture::decode_order_execution_test() {
   update_buffer(tmp, expected_order_exec.MDEntryType);
   DecoderOutputFunctor output_fn;
   simba::ProtocolDecoder pd(output_fn,os_);
-  pd(buffer, 110);
+  pd({buffer, 110});
   assert_true("decode_order_execution_test",
               expected_order_exec == output_fn.order_execution() &&
                   expected_mdp == output_fn.mdp_header() &&
@@ -199,7 +221,7 @@ void test_fixture::decode_best_prices_test() {
 
   DecoderOutputFunctor output_fn;
   simba::ProtocolDecoder pd(output_fn,os_);
-  pd(buffer, 111);
+  pd({buffer, 111});
   assert_true("decoder_best_prices_test",
               expected_mdp == output_fn.mdp_header() &&
                   expected_inc == output_fn.inc_header());
@@ -277,7 +299,7 @@ void test_fixture::decode_order_book_snapshot_test() {
 
   DecoderOutputFunctor output_fn;
   simba::ProtocolDecoder pd(output_fn, os_);
-  pd(buffer, 157);
+  pd({buffer, 157});
   assert_true("decode_order_book_snapshot_test",
               expected_mdp == output_fn.mdp_header() &&
                   expected_order_book_snapshot ==
@@ -343,9 +365,9 @@ void test_fixture::packet_reader_1() {
   int count{};
   int expected_payload_length{86};
   int output_length{};
-  auto cb = [&count, &output_length](const std::uint8_t *, int payload_length) {
+  auto cb = [&count, &output_length](auto buf_sv) {
     ++count;
-    output_length = payload_length;
+    output_length = buf_sv.size();
   };
 
   reader::PcapReader pcap_reader(std::move(cb), os_);
@@ -359,10 +381,9 @@ void test_fixture::packet_reader_2() {
   std::vector<int> expected_payload_lengths(8, 1354);
   expected_payload_lengths.push_back(898);
   std::vector<int> output_lengths;
-  auto cb = [&count, &output_lengths](const std::uint8_t *,
-                                      int payload_length) {
+  auto cb = [&count, &output_lengths](auto buf_sv) {
     ++count;
-    output_lengths.push_back(payload_length);
+    output_lengths.push_back(buf_sv.size());
   };
 
   reader::PcapReader pcap_reader(std::move(cb), os_);
@@ -375,10 +396,9 @@ void test_fixture::packet_reader_3() {
   int count{};
   std::vector<int> expected_payload_lengths{75, 250};
   std::vector<int> output_lengths;
-  auto cb = [&count, &output_lengths](const std::uint8_t *,
-                                      int payload_length) {
+  auto cb = [&count, &output_lengths](auto buf_sv) {
     ++count;
-    output_lengths.push_back(payload_length);
+    output_lengths.push_back(buf_sv.size());
   };
 
   reader::PcapReader pcap_reader(std::move(cb), os_);
@@ -391,9 +411,9 @@ void test_fixture::packet_reader_4() {
   int expected_payload_length{110};
   int output_length{};
   int count{};
-  auto cb = [&count, &output_length](const std::uint8_t *, int payload_length) {
+  auto cb = [&count, &output_length](auto buf_sv) {
     ++count;
-    output_length = payload_length;
+    output_length = buf_sv.size();
   };
 
   reader::PcapReader pcap_reader(std::move(cb), os_);
@@ -406,9 +426,9 @@ void test_fixture::packet_reader_5() {
   int count{};
   int output_length{};
   int expected_length{100};
-  auto cb = [&count, &output_length](const std::uint8_t *, int payload_length) {
+  auto cb = [&count, &output_length](auto  buf_sv) {
     ++count;
-    output_length = payload_length;
+    output_length = buf_sv.size();
   };
   reader::PcapReader pcap_reader(std::move(cb), os_);
   pcap_reader.read_packets(

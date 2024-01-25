@@ -2,10 +2,11 @@
 #include <cstdint>
 #include <functional>
 #include <string>
+#include <string_view>
 namespace reader {
 struct PcapReader {
   using DecoderCb =
-      std::function<void(const std::uint8_t *, int payload_length)>;
+      std::function<void(std::basic_string_view<uint8_t>)>;
   PcapReader(DecoderCb &&cb, std::ostream& log_os);
   void read_packets(const std::string &file_path);
 

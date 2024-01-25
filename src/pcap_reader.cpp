@@ -21,9 +21,9 @@ void PcapReader::read_packets(const std::string &file_path) {
     // The packet points to an internal buffer of pcap library. For safety (to
     // future modifications in pcap third party library) and possible use later in multithreaded
     // code etc., it might  be better to copy it in our own local buffer.
-    const int payload_length = header->caplen - n_payload_offset;
+    const std::size_t payload_length = header->caplen - n_payload_offset;
     std::memcpy(read_buffer_,packet+n_payload_offset,payload_length);
-    cb_(read_buffer_, payload_length);
+    cb_({read_buffer_, payload_length});
     std::memset(read_buffer_, 0, sizeof(read_buffer_));
     result = pcap_next_ex(handle, &header, &packet);
   }

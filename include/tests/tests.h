@@ -27,6 +27,7 @@ private:
   void run_protocol_decoder_tests();
   void run_stream_writer_tests();
   void run_basic_stream_writer_test();
+  void run_integration_tests();
   void packet_reader_1();
   void packet_reader_2();
   void packet_reader_3();
@@ -43,6 +44,12 @@ private:
   void decode_order_update_test();
   void decode_order_execution_test();
   void decode_order_book_snapshot_test();
+
+  void integration_test_1();
+  void integration_test_2();
+  void integration_test_3();
+  void integration_test_4();
+  void integration_test_5();
   void assert_true(const std::string &test_name, bool expression);
 
   template <typename T> void update_buffer(uint8_t *&buffer, T val) {

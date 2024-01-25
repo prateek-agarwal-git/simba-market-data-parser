@@ -6,12 +6,14 @@
 #include <cassert>
 #include <cstdint>
 #include <functional>
+#include <string_view>
 
 namespace simba {
 
 template <typename OutputFunctor, typename LogStream> struct ProtocolDecoder {
   ProtocolDecoder(OutputFunctor &output, LogStream &l) : output_(output), l_(l) {}
-  void operator()(const std::uint8_t *payload, int payload_length);
+
+  void operator()(std::basic_string_view<uint8_t> packet);
 
 private:
   template <typename T> T get_value(const uint8_t *&buffer) {
@@ -27,9 +29,8 @@ private:
       opt = val;
     }
   }
-  void decode_incremental_packet(const uint8_t *buffer, int remaining_bytes);
-  void decode_snapshot_packet(const uint8_t *buffer,
-                              std::size_t remaining_bytes);
+  void decode_incremental_packet(std::basic_string_view<std::uint8_t> buffer);
+  void decode_snapshot_packet(std::basic_string_view<std::uint8_t> buffer);
 
   std::size_t process_best_prices(const uint8_t *buffer);
   std::size_t process_order_update(const uint8_t *buffer);
